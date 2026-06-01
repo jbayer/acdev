@@ -5,3 +5,19 @@ claude-code.pkg-path = "flox/claude-code"
 claude-code.pkg-group = "claude-code"
 shellcheck.pkg-path = "shellcheck"
 bats.pkg-path = "bats"
+
+# Package the acdev CLI + shell hooks as a Flox package.
+#   $out/bin/acdev                                 the CLI (lands on PATH)
+#   $out/share/acdev/hooks/acdev.{bash,zsh,fish}   auto-handoff hooks
+# runtime-packages = [] keeps the closure minimal: acdev is a self-contained
+# bash script that shells out to the system `container` CLI and coreutils.
+[build.acdev]
+description = "Seamless cd->container-shell handoff on macOS using Apple's container CLI"
+version = "0.1.0"
+runtime-packages = []
+command = '''
+  mkdir -p "$out/bin" "$out/share/acdev/hooks"
+  cp bin/acdev "$out/bin/acdev"
+  chmod 0755 "$out/bin/acdev"
+  cp hooks/acdev.bash hooks/acdev.zsh hooks/acdev.fish "$out/share/acdev/hooks/"
+'''

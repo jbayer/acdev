@@ -24,6 +24,36 @@ echo 'source '"$PWD"'/hooks/acdev.bash' >> ~/.bashrc   # bash
 echo 'source '"$PWD"'/hooks/acdev.fish' >> ~/.config/fish/config.fish  # fish
 ```
 
+### Or: install as a Flox package
+
+`acdev` is also packaged as a Flox manifest build (`[build.acdev]` in
+`.flox/env/manifest.toml`). It bundles the CLI and all three shell hooks:
+
+```
+$out/bin/acdev                                 # the CLI
+$out/share/acdev/hooks/acdev.{bash,zsh,fish}   # auto-handoff hooks
+```
+
+Build it from the repo root (Apple silicon macOS only):
+
+```bash
+flox build acdev        # → ./result-acdev
+./result-acdev/bin/acdev --help
+```
+
+A ready-to-use **example environment** under `example/` consumes that build: it
+puts `acdev` on PATH and registers the hooks in its `[profile]`. After building:
+
+```bash
+flox activate -d example          # acdev on PATH + hooks active
+cd example/demo-project           # has .applecontainer.toml → auto-handoff fires
+```
+
+`cd`-ing into `example/demo-project` (which ships an `.applecontainer.toml`)
+triggers `acdev up && acdev shell` and drops you into the container. The example
+manifest references the build output at `../result-acdev`, so run `flox build
+acdev` first; re-activate if you rebuild.
+
 ## Use
 
 1. Run `acdev init` in a project root to generate a starter `.applecontainer.toml`

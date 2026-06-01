@@ -1,2 +1,9 @@
 # Test scratch
 tests/.tmp/
+
+# Flox build results (symlinks into the Nix store)
+/result
+/result-*
+
+# macOS
+.DS_Store

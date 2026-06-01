@@ -1,0 +1,13 @@
+# acdev project config — makes this directory acdev-managed.
+# The image is digest-pinned for reproducibility; the rest are optional and
+# show their defaults, commented out. Uncomment and edit to override.
+image = "jbayer/devcontainer-flox:1.12.1@sha256:972c46da0f5e2d80c17d2a8acab1591bf65f3476b0948410ee1db34299314a54"
+
+# user      = "flox"                # exec/run as this user
+# workspace = "/workspaces/<dir>"   # default: /workspaces/<basename of this dir>
+# shell     = "bash"                # shell to drop into
+# flox      = "auto"                # auto = activate iff .flox/ exists; true/false to force
+
+# Environment variables passed into the container:
+# [env]
+# EXAMPLE = "value"

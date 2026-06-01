@@ -1,0 +1,17 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.12.0",
+    "profile": {
+      "bash": "  _acdev_pkg=\"$(cd \"$FLOX_ENV_PROJECT/..\" 2>/dev/null && pwd -P)/result-acdev\"\n  if [ -x \"$_acdev_pkg/bin/acdev\" ]; then\n    case \":$PATH:\" in *\":$_acdev_pkg/bin:\"*) ;; *) PATH=\"$_acdev_pkg/bin:$PATH\" ;; esac\n    export PATH\n    . \"$_acdev_pkg/share/acdev/hooks/acdev.bash\"\n  else\n    echo \"acdev: package not built yet -- run 'flox build acdev' in the repo root, then re-activate.\" >&2\n  fi\n",
+      "zsh": "  _acdev_pkg=\"$(cd \"$FLOX_ENV_PROJECT/..\" 2>/dev/null && pwd -P)/result-acdev\"\n  if [ -x \"$_acdev_pkg/bin/acdev\" ]; then\n    case \":$PATH:\" in *\":$_acdev_pkg/bin:\"*) ;; *) PATH=\"$_acdev_pkg/bin:$PATH\" ;; esac\n    export PATH\n    . \"$_acdev_pkg/share/acdev/hooks/acdev.zsh\"\n  else\n    echo \"acdev: package not built yet -- run 'flox build acdev' in the repo root, then re-activate.\" >&2\n  fi\n",
+      "fish": "  set _acdev_pkg (cd \"$FLOX_ENV_PROJECT/..\" 2>/dev/null; and pwd -P)\"/result-acdev\"\n  if test -x \"$_acdev_pkg/bin/acdev\"\n      if not contains \"$_acdev_pkg/bin\" $PATH\n          set -gx PATH \"$_acdev_pkg/bin\" $PATH\n      end\n      source \"$_acdev_pkg/share/acdev/hooks/acdev.fish\"\n  else\n      echo \"acdev: package not built yet -- run 'flox build acdev' in the repo root, then re-activate.\" >&2\n  end\n"
+    },
+    "options": {
+      "systems": [
+        "aarch64-darwin"
+      ]
+    }
+  },
+  "packages": []
+}
