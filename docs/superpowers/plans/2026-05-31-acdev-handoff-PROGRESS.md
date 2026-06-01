@@ -35,6 +35,8 @@
 
 ## Exact resume point
 
+**Resuming on macOS? → read `docs/superpowers/plans/2026-05-31-acdev-T11-macos-resume.md` first.**
+
 Only **T11 (manual)** remains — it cannot run here (no macOS 26 / Apple Container /
 arm64 image). Hand the checklist in the plan (Task 11) to the user. The single most
 likely thing to adjust after T11 is `container_state` (the `container ls` parser) and
