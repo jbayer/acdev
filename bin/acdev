@@ -143,6 +143,23 @@ _up_create() {
   container_do "${args[@]}"
 }
 
+# Build the in-container entry command honoring CFG_FLOX and CFG_SHELL.
+_entry_script() {
+  case "$CFG_FLOX" in
+    true)  printf 'exec flox activate' ;;
+    false) printf 'exec %s -l' "$CFG_SHELL" ;;
+    *)     printf 'if [ -d .flox ]; then exec flox activate; else exec %s -l; fi' "$CFG_SHELL" ;;
+  esac
+}
+
+cmd_shell() {
+  resolve_config
+  local name; name="$(container_name)"
+  emit "→  entering shell (flox: $CFG_FLOX)"
+  ACDEV_INSIDE=1 container_do exec -it -w "$CFG_WORKSPACE" "$name" \
+    "$CFG_SHELL" -lc "ACDEV_INSIDE=1; $(_entry_script)"
+}
+
 main() {
   local cmd="" rest=()
   while [ "$#" -gt 0 ]; do
@@ -155,7 +172,8 @@ main() {
     shift
   done
   case "$cmd" in
-    up) cmd_up "${rest[@]:-}" ;;
+    up)     cmd_up "${rest[@]:-}" ;;
+    shell)  cmd_shell "${rest[@]:-}" ;;
     "") usage >&2; return 2 ;;
     *)  usage >&2; return 2 ;;
   esac
