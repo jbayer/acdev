@@ -143,6 +143,19 @@ _up_create() {
   container_do "${args[@]}"
 }
 
+cmd_down() {
+  resolve_config
+  local name rm=0 a
+  name="$(container_name)"
+  for a in "$@"; do [ "$a" = "--rm" ] && rm=1; done
+  container_do stop "$name" >/dev/null 2>&1 || true
+  emit "✔ stopped $name"
+  if [ "$rm" = 1 ]; then
+    container_do rm "$name" >/dev/null 2>&1 || true
+    emit "✔ removed $name"
+  fi
+}
+
 cmd_status() {
   resolve_config
   local name state line ip
@@ -193,6 +206,7 @@ main() {
     up)     cmd_up "${rest[@]:-}" ;;
     shell)  cmd_shell "${rest[@]:-}" ;;
     status) cmd_status "${rest[@]:-}" ;;
+    down)   cmd_down "${rest[@]:-}" ;;
     "") usage >&2; return 2 ;;
     *)  usage >&2; return 2 ;;
   esac
