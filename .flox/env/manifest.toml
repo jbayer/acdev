@@ -1,0 +1,7 @@
+schema-version = "1.12.0"
+
+[install]
+claude-code.pkg-path = "flox/claude-code"
+claude-code.pkg-group = "claude-code"
+shellcheck.pkg-path = "shellcheck"
+bats.pkg-path = "bats"

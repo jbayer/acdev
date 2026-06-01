@@ -1,0 +1,401 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.12.0",
+    "install": {
+      "bats": {
+        "pkg-path": "bats"
+      },
+      "claude-code": {
+        "pkg-path": "flox/claude-code",
+        "pkg-group": "claude-code"
+      },
+      "shellcheck": {
+        "pkg-path": "shellcheck"
+      }
+    },
+    "options": {}
+  },
+  "packages": [
+    {
+      "attr_path": "claude-code",
+      "broken": false,
+      "derivation": "/nix/store/l9jn7m43dmw8vw6hh5pzylcwl87wwv70-claude-code-2.1.158.drv",
+      "description": "Agentic coding tool from Anthropic",
+      "install_id": "claude-code",
+      "license": "Unfree",
+      "locked_url": "https://github.com/flox/floxenvs?rev=4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "name": "claude-code-2.1.158",
+      "pname": "claude-code",
+      "rev": "4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "rev_count": 5089,
+      "rev_date": "2026-05-30T07:32:11Z",
+      "scrape_date": "2026-06-01T01:05:26.184653Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": true,
+      "version": "2.1.158",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/d7zga4mvnlmghwbbzwqy1laqkz01ywb6-claude-code-2.1.158"
+      },
+      "system": "aarch64-darwin",
+      "group": "claude-code",
+      "priority": 5
+    },
+    {
+      "attr_path": "claude-code",
+      "broken": false,
+      "derivation": "/nix/store/kzc4pcrswajssravgq9srjkg311fz0ri-claude-code-2.1.158.drv",
+      "description": "Agentic coding tool from Anthropic",
+      "install_id": "claude-code",
+      "license": "Unfree",
+      "locked_url": "https://github.com/flox/floxenvs?rev=4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "name": "claude-code-2.1.158",
+      "pname": "claude-code",
+      "rev": "4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "rev_count": 5089,
+      "rev_date": "2026-05-30T07:32:11Z",
+      "scrape_date": "2026-06-01T01:05:26.184656Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": true,
+      "version": "2.1.158",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/kkmkmsskrv9dp1brqhsci69zylsy4nc5-claude-code-2.1.158"
+      },
+      "system": "aarch64-linux",
+      "group": "claude-code",
+      "priority": 5
+    },
+    {
+      "attr_path": "claude-code",
+      "broken": false,
+      "derivation": "/nix/store/1iifx3dqphw30wjlykv1v238rh25qlqv-claude-code-2.1.158.drv",
+      "description": "Agentic coding tool from Anthropic",
+      "install_id": "claude-code",
+      "license": "Unfree",
+      "locked_url": "https://github.com/flox/floxenvs?rev=4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "name": "claude-code-2.1.158",
+      "pname": "claude-code",
+      "rev": "4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "rev_count": 5089,
+      "rev_date": "2026-05-30T07:32:11Z",
+      "scrape_date": "2026-06-01T01:05:26.184658Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": true,
+      "version": "2.1.158",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/mp1hf8m1gjwf16qlghj0nrrnxm2qs1vq-claude-code-2.1.158"
+      },
+      "system": "x86_64-darwin",
+      "group": "claude-code",
+      "priority": 5
+    },
+    {
+      "attr_path": "claude-code",
+      "broken": false,
+      "derivation": "/nix/store/ijrm2n6xj4q44a8rxas67vfcvc5kylny-claude-code-2.1.158.drv",
+      "description": "Agentic coding tool from Anthropic",
+      "install_id": "claude-code",
+      "license": "Unfree",
+      "locked_url": "https://github.com/flox/floxenvs?rev=4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "name": "claude-code-2.1.158",
+      "pname": "claude-code",
+      "rev": "4efc06a321d74224faafe52ce27a4514b3cbd466",
+      "rev_count": 5089,
+      "rev_date": "2026-05-30T07:32:11Z",
+      "scrape_date": "2026-06-01T01:05:26.184659Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": true,
+      "version": "2.1.158",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/bbafs9rxxsflypd8hp431fp8f4py6s30-claude-code-2.1.158"
+      },
+      "system": "x86_64-linux",
+      "group": "claude-code",
+      "priority": 5
+    },
+    {
+      "attr_path": "bats",
+      "broken": false,
+      "derivation": "/nix/store/x9czvkknrn4h41p87fp9438pk72bbfbx-bats-1.12.0.drv",
+      "description": "Bash Automated Testing System",
+      "install_id": "bats",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "bats-1.12.0",
+      "pname": "bats",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T07:06:02.657210Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.12.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/jkp1n6vf5kj5z709n5l8mgjzkby97rr7-bats-1.12.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "bats",
+      "broken": false,
+      "derivation": "/nix/store/c701ywjnvk0mwwk6rssirvbcsjavy858-bats-1.12.0.drv",
+      "description": "Bash Automated Testing System",
+      "install_id": "bats",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "bats-1.12.0",
+      "pname": "bats",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T07:34:25.846059Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.12.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/7figc61fkvp1v1rbgi77f0bkc71c8hh2-bats-1.12.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "bats",
+      "broken": false,
+      "derivation": "/nix/store/z845rn41z158scw1ix1vwlcq0zzr5rx2-bats-1.12.0.drv",
+      "description": "Bash Automated Testing System",
+      "install_id": "bats",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "bats-1.12.0",
+      "pname": "bats",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:02:11.869591Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.12.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/1xrr8g08d7mmbg9q205hxbv3fryspnai-bats-1.12.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "bats",
+      "broken": false,
+      "derivation": "/nix/store/xil0advcy7g17ykbkcbrkhj4zl3mdicg-bats-1.12.0.drv",
+      "description": "Bash Automated Testing System",
+      "install_id": "bats",
+      "license": "MIT",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "bats-1.12.0",
+      "pname": "bats",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:32:50.907638Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.12.0",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/n0md2c3y0pfqjfz8rh3vdwkn4bkvv2bq-bats-1.12.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "shellcheck",
+      "broken": false,
+      "derivation": "/nix/store/4dbdvzq751w5ai7fl204nhw788bccaiw-shellcheck-0.11.0.drv",
+      "description": "Shell script analysis tool",
+      "install_id": "shellcheck",
+      "license": "GPL-3.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "shellcheck-0.11.0",
+      "pname": "shellcheck",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T07:07:51.337425Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.11.0",
+      "outputs_to_install": [
+        "bin",
+        "doc",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/5lr3z3mqgj186p8drycnnkxh7zs13kf0-shellcheck-0.11.0-bin",
+        "doc": "/nix/store/4wz8ih8li10v4s4q1rya1m85wc4aw4wd-shellcheck-0.11.0-doc",
+        "man": "/nix/store/5gzk96ghybkcjzhnz6gjk0k4szymwvp9-shellcheck-0.11.0-man",
+        "out": "/nix/store/ivfr09ssl368lcdw8jswrb653s43cvxb-shellcheck-0.11.0"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "shellcheck",
+      "broken": false,
+      "derivation": "/nix/store/ffcd4vy1qvsydg8fxfkvmcdvmzfkx4mx-shellcheck-0.11.0.drv",
+      "description": "Shell script analysis tool",
+      "install_id": "shellcheck",
+      "license": "GPL-3.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "shellcheck-0.11.0",
+      "pname": "shellcheck",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T07:36:55.691977Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.11.0",
+      "outputs_to_install": [
+        "bin",
+        "doc",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/hqajavk4av9v6l08h1xsfz19rwsir85y-shellcheck-0.11.0-bin",
+        "doc": "/nix/store/gdjj2q6jwgjj14c72hwss2zxww5hxvbm-shellcheck-0.11.0-doc",
+        "man": "/nix/store/jpdzs6ywlqmxbmzim0b8flrwc9ac94vz-shellcheck-0.11.0-man",
+        "out": "/nix/store/bg01hij699rpkg2q0fhghdyma1zf3vmc-shellcheck-0.11.0"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "shellcheck",
+      "broken": false,
+      "derivation": "/nix/store/myn4wmwbj4ydxvnp6kj7759yg1shrr63-shellcheck-0.11.0.drv",
+      "description": "Shell script analysis tool",
+      "install_id": "shellcheck",
+      "license": "GPL-3.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "shellcheck-0.11.0",
+      "pname": "shellcheck",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:03:59.831338Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.11.0",
+      "outputs_to_install": [
+        "bin",
+        "doc",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/g02yfjc7lgig0fnv666ii9rz1vx6mvs2-shellcheck-0.11.0-bin",
+        "doc": "/nix/store/iymch2lfdskwpzgka1igia981k76wp9w-shellcheck-0.11.0-doc",
+        "man": "/nix/store/nc5lj21np4za87piqf5nyax0ibimlzss-shellcheck-0.11.0-man",
+        "out": "/nix/store/ipidk29kr6a49xk0vl6ygz6dx2vd9ss0-shellcheck-0.11.0"
+      },
+      "system": "x86_64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "shellcheck",
+      "broken": false,
+      "derivation": "/nix/store/zyas2299gc5ia1ya5h7hkl5qz5j5za1d-shellcheck-0.11.0.drv",
+      "description": "Shell script analysis tool",
+      "install_id": "shellcheck",
+      "license": "GPL-3.0-only",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "shellcheck-0.11.0",
+      "pname": "shellcheck",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T08:35:19.678590Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "0.11.0",
+      "outputs_to_install": [
+        "bin",
+        "doc",
+        "man"
+      ],
+      "outputs": {
+        "bin": "/nix/store/2lfacwyvxpllrq9jpbyz7z4v4lc3wnr9-shellcheck-0.11.0-bin",
+        "doc": "/nix/store/qbmc0kv3ddridry1w7rdc124an8fk895-shellcheck-0.11.0-doc",
+        "man": "/nix/store/0504zfbbnxm2dgnkj0pal11nv09i1g2p-shellcheck-0.11.0-man",
+        "out": "/nix/store/pmk1wsbpsxkaa33mrigc72iln3pvy9r2-shellcheck-0.11.0"
+      },
+      "system": "x86_64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

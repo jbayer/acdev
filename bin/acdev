@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage: acdev <command> [options]
+
+Commands:
+  up        Create or reuse this project's container
+  shell     Enter the project's container shell
+  status    Show the project's container state
+  down      Stop the project's container (--rm to also remove)
+
+Options:
+  --dry-run   Print the container commands instead of running them
+  --help      Show this help
+
+A project is any directory containing .applecontainer.toml.
+EOF
+}
+
+main() {
+  if [ "$#" -eq 0 ]; then
+    usage >&2
+    return 2
+  fi
+  case "$1" in
+    --help|-h) usage; return 0 ;;
+    *) usage >&2; return 2 ;;   # real dispatch added in later tasks
+  esac
+}
+
+main "$@"
