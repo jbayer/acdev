@@ -1090,7 +1090,13 @@ git commit -m "docs(acdev): README with install, usage, and how-it-works"
 installed and the `jbayer/devcontainer-flox` image available for linux/arm64. It cannot
 run in CI. Record results in the PR / a scratch note.
 
-- [ ] **Step 1: Verify CLI surface against the installed version**
+**✅ DONE 2026-05-31** — verified on macOS 26 / Apple silicon, `container` v0.12.3.
+Full findings + real `container ls` output in
+`2026-05-31-acdev-handoff-PROGRESS.md` ("Task 11 results"). One fix folded in
+(`cmd_status` IP → field 6 + strip CIDR); `tests/helpers/fake-container` updated to the
+real table format; `container_state` unchanged. 24/24 bats green, shellcheck clean.
+
+- [x] **Step 1: Verify CLI surface against the installed version**
 
 Run and confirm the flags the script uses exist:
 ```bash
@@ -1103,7 +1109,7 @@ container stop --help
 ```
 If any flag differs, update `bin/acdev` (state probe is isolated in `container_state`).
 
-- [ ] **Step 2: Confirm the image runs**
+- [x] **Step 2: Confirm the image runs**
 
 ```bash
 container run --rm jbayer/devcontainer-flox:1.12.1 bash -lc 'flox --version && sleep 0.1'
@@ -1111,7 +1117,7 @@ container run --rm jbayer/devcontainer-flox:1.12.1 bash -lc 'flox --version && s
 Expected: prints a Flox version. If it fails on architecture, note the linux/arm64
 requirement and pick an arm64-capable image/tag.
 
-- [ ] **Step 3: End-to-end handoff**
+- [x] **Step 3: End-to-end handoff**
 
 ```bash
 mkdir -p /tmp/acdev-demo && cd /tmp/acdev-demo
@@ -1123,7 +1129,7 @@ acdev shell   # expect: inside container, flox-activated; `pwd` is the workspace
 Inside the shell, verify: `echo "$ACDEV_INSIDE"` is `1`; a file created on the host
 in `/tmp/acdev-demo` is visible, and vice versa (virtiofs read-write sanity).
 
-- [ ] **Step 4: Reuse + status + teardown**
+- [x] **Step 4: Reuse + status + teardown**
 
 ```bash
 exit                 # leave the shell
@@ -1132,12 +1138,12 @@ acdev status         # expect: running + an IP (e.g. 192.168.64.x)
 acdev down --rm      # expect: stopped + removed
 ```
 
-- [ ] **Step 5: Hook smoke test**
+- [x] **Step 5: Hook smoke test**
 
 With the hook sourced in your real shell, `cd /tmp/acdev-demo` and confirm you are
 dropped into the container shell automatically; `exit` returns you to the host.
 
-- [ ] **Step 6: Record findings**
+- [x] **Step 6: Record findings**
 
 Note any deviations (flag names, `container ls` format, virtiofs quirks, Local
 Network permission prompts) and fold fixes back into `bin/acdev`.

@@ -180,9 +180,12 @@ cmd_status() {
   printf 'image     %s\n' "$CFG_IMAGE"
   printf 'workspace %s → %s\n' "$(pwd -P)" "$CFG_WORKSPACE"
   if [ "$state" = running ]; then
-    # IP is the 2nd field of the matching `container ls` row.
+    # IP is the ADDR column (6th field) of the matching `container ls` row:
+    # "ID IMAGE OS ARCH STATE ADDR CPUS MEMORY STARTED". Real ADDR carries a
+    # CIDR suffix (e.g. "192.168.64.3/24"); strip it to a bare IP.
     line="$(command container ls 2>/dev/null | grep -w -- "$name" | head -n1)"
-    ip="$(printf '%s' "$line" | awk '{print $2}')"
+    ip="$(printf '%s' "$line" | awk '{print $6}')"
+    ip="${ip%%/*}"
     [ -n "$ip" ] && printf 'ip        %s\n' "$ip"
   fi
 }

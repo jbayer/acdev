@@ -1,10 +1,18 @@
 #!/usr/bin/env bash
-# Test double for Apple's `container` CLI.
+# Test double for Apple's `container` CLI (modeled on real v0.12.3 output,
+# observed during Task 11 macOS integration verification).
 # - Records argv (one line per call) to $ACDEV_FAKE_LOG.
 # - Simulates state via $ACDEV_FAKE_STATE: absent | stopped | running.
 #   `container ls`        lists RUNNING containers only.
 #   `container ls --all`  lists ALL containers (running + stopped).
 # The "name" reported is taken from $ACDEV_FAKE_NAME if set.
+#
+# Real `container ls` is a 9-column table with a header row:
+#   ID  IMAGE  OS  ARCH  STATE  ADDR  CPUS  MEMORY  STARTED
+# ADDR is column 6 and carries a CIDR suffix (e.g. 192.168.64.3/24);
+# a stopped container's ADDR is blank. This fake reproduces that layout so
+# container_state (greps the name) and cmd_status (reads the ADDR column)
+# are exercised against the real format.
 set -euo pipefail
 echo "$*" >>"${ACDEV_FAKE_LOG:-/dev/null}"
 
@@ -15,13 +23,17 @@ fi
 
 state="${ACDEV_FAKE_STATE:-absent}"
 name="${ACDEV_FAKE_NAME:-}"
+ts="2026-06-01T00:00:00Z"
 
 case "$1" in
   ls)
     all=0; [[ "$*" == *"--all"* ]] && all=1
+    printf 'ID  IMAGE  OS  ARCH  STATE  ADDR  CPUS  MEMORY  STARTED\n'
     case "$state" in
-      running)              [ -n "$name" ] && echo "$name 192.168.64.42 running" ;;
-      stopped) [ "$all" = 1 ] && { [ -n "$name" ] && echo "$name - stopped"; } ;;
+      running) [ -n "$name" ] && \
+        printf '%s docker.io/img:1 linux arm64 running 192.168.64.42/24 4 1024 MB %s\n' "$name" "$ts" ;;
+      stopped) [ "$all" = 1 ] && [ -n "$name" ] && \
+        printf '%s docker.io/img:1 linux arm64 stopped  4 1024 MB %s\n' "$name" "$ts" ;;
       absent)  : ;;
     esac
     ;;
