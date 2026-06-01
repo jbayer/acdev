@@ -77,6 +77,27 @@ acdev up --dry-run   # print the container commands without running them
 - Reach services running in the container by its IP (`acdev status`) — the
   reliable path on Apple Container.
 
+## Troubleshooting
+
+`up`, `status`, and `down` preflight the Apple Container CLI and daemon, and fail
+fast with an actionable message (exit 1) instead of a cryptic error:
+
+- **`container` not installed / not on PATH:**
+
+  ```
+  acdev: the 'container' CLI was not found. Install Apple Container
+  (apple/container) and ensure it is on your PATH.
+  ```
+
+- **Container service not started:**
+
+  ```
+  acdev: cannot reach the container service. Start it with: container system start
+  ```
+
+`acdev init` and `acdev up --dry-run` deliberately skip these checks — they don't
+touch the daemon, so they work with `container` absent or stopped.
+
 ## Without Flox (manual fallback)
 
 If you aren't using Flox, you can run the script directly and source the hooks
