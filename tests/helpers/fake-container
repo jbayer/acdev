@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Test double for Apple's `container` CLI.
+# - Records argv (one line per call) to $ACDEV_FAKE_LOG.
+# - Simulates state via $ACDEV_FAKE_STATE: absent | stopped | running.
+#   `container ls`        lists RUNNING containers only.
+#   `container ls --all`  lists ALL containers (running + stopped).
+# The "name" reported is taken from $ACDEV_FAKE_NAME if set.
+set -euo pipefail
+echo "$*" >>"${ACDEV_FAKE_LOG:-/dev/null}"
+
+if [ "${ACDEV_FAKE_STATE:-}" = "daemon_down" ]; then
+  echo "Cannot connect to the container service" >&2
+  exit 1
+fi
+
+state="${ACDEV_FAKE_STATE:-absent}"
+name="${ACDEV_FAKE_NAME:-}"
+
+case "$1" in
+  ls)
+    all=0; [[ "$*" == *"--all"* ]] && all=1
+    case "$state" in
+      running)              [ -n "$name" ] && echo "$name 192.168.64.42 running" ;;
+      stopped) [ "$all" = 1 ] && { [ -n "$name" ] && echo "$name - stopped"; } ;;
+      absent)  : ;;
+    esac
+    ;;
+  *) : ;;   # run/start/stop/exec/etc. just get logged
+esac
+exit 0

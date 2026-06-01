@@ -88,15 +88,51 @@ resolve_config() {
 container_name() {
   local abs base hash
   abs="$(pwd -P)"
-  base="$(basename "$abs" | tr -c 'A-Za-z0-9_.-' '-')"
+  # printf (no trailing newline) before tr; otherwise tr maps basename's
+  # trailing \n to '-', producing a spurious double dash in the name.
+  base="$(printf '%s' "$(basename "$abs")" | tr -c 'A-Za-z0-9_.-' '-')"
   hash="$(printf '%s' "$abs" | shasum -a 256 | cut -c1-8)"
   printf 'acdev-%s-%s' "$base" "$hash"
+}
+
+# Echoes: running | stopped | absent
+container_state() {
+  local name="$1"
+  if command container ls 2>/dev/null | grep -qw -- "$name"; then
+    echo running
+  elif command container ls --all 2>/dev/null | grep -qw -- "$name"; then
+    echo stopped
+  else
+    echo absent
+  fi
 }
 
 cmd_up() {
   resolve_config
   local name; name="$(container_name)"
-  # shellcheck disable=SC2206
+  emit "🍎 acdev: project '$(basename "$(pwd -P)")'  ($name)"
+  emit "   image     $CFG_IMAGE"
+  emit "   workspace $(pwd -P) → $CFG_WORKSPACE"
+
+  # Under --dry-run we can't probe a real daemon; just emit the create command.
+  if [ "$DRY_RUN" = 1 ]; then
+    _up_create "$name"; return 0
+  fi
+
+  case "$(container_state "$name")" in
+    running)
+      emit "✔ reusing running container" ;;
+    stopped)
+      container_do start "$name" >/dev/null
+      emit "✔ restarted container" ;;
+    absent)
+      _up_create "$name" >/dev/null
+      emit "✔ created container" ;;
+  esac
+}
+
+_up_create() {
+  local name="$1"
   local args=(run -d --name "$name" -v "$(pwd -P):$CFG_WORKSPACE" -w "$CFG_WORKSPACE")
   [ -n "$CFG_USER" ] && args+=(--user "$CFG_USER")
   local kv
