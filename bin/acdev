@@ -100,8 +100,7 @@ cmd_up() {
   local args=(run -d --name "$name" -v "$(pwd -P):$CFG_WORKSPACE" -w "$CFG_WORKSPACE")
   [ -n "$CFG_USER" ] && args+=(--user "$CFG_USER")
   local kv
-  # shellcheck disable=SC2068
-  for kv in ${CFG_ENV[@]:-}; do
+  for kv in "${CFG_ENV[@]:-}"; do
     [ -n "$kv" ] && args+=(-e "$kv")
   done
   args+=("$CFG_IMAGE" sleep infinity)
