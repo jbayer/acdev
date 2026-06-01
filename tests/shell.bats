@@ -7,7 +7,9 @@ teardown() { teardown_acdev; }
   [ "$status" -eq 0 ]
   [[ "$output" == *"container exec -it -w /workspaces/myproject acdev-myproject-"* ]]
   [[ "$output" == *'if [ -d .flox ]'* ]]
-  [[ "$output" == *"exec flox activate"* ]]
+  # FLOX_SHELL is set so flox can detect the shell inside the container, where
+  # $SHELL is unset and `exec` hides the parent process from flox's detection.
+  [[ "$output" == *"exec env FLOX_SHELL=bash flox activate"* ]]
   [[ "$output" == *"exec bash -l"* ]]
 }
 
@@ -21,8 +23,14 @@ teardown() { teardown_acdev; }
 @test "flox=true always activates flox" {
   printf 'image = "img:1"\nflox = "true"\n' >.applecontainer.toml
   run acdev shell --dry-run
-  [[ "$output" == *"exec flox activate"* ]]
+  [[ "$output" == *"exec env FLOX_SHELL=bash flox activate"* ]]
   [[ "$output" != *'if [ -d .flox ]'* ]]
+}
+
+@test "flox activation passes the configured shell to FLOX_SHELL" {
+  printf 'image = "img:1"\nflox = "true"\nshell = "zsh"\n' >.applecontainer.toml
+  run acdev shell --dry-run
+  [[ "$output" == *"exec env FLOX_SHELL=zsh flox activate"* ]]
 }
 
 @test "shell honors a custom shell" {

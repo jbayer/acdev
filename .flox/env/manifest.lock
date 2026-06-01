@@ -19,7 +19,7 @@
       "acdev": {
         "command": "  mkdir -p \"$out/bin\" \"$out/share/acdev/hooks\"\n  cp bin/acdev \"$out/bin/acdev\"\n  chmod 0755 \"$out/bin/acdev\"\n  cp hooks/acdev.bash hooks/acdev.zsh hooks/acdev.fish \"$out/share/acdev/hooks/\"\n",
         "runtime-packages": [],
-        "version": "0.1.1",
+        "version": "0.1.2",
         "description": "Seamless cd->container-shell handoff on macOS using Apple's container CLI"
       }
     }

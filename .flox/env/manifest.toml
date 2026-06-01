@@ -13,7 +13,7 @@ bats.pkg-path = "bats"
 # bash script that shells out to the system `container` CLI and coreutils.
 [build.acdev]
 description = "Seamless cd->container-shell handoff on macOS using Apple's container CLI"
-version = "0.1.1"
+version = "0.1.2"
 runtime-packages = []
 command = '''
   mkdir -p "$out/bin" "$out/share/acdev/hooks"

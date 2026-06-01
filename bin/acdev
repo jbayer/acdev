@@ -221,11 +221,15 @@ cmd_status() {
 }
 
 # Build the in-container entry command honoring CFG_FLOX and CFG_SHELL.
+# flox activation sets FLOX_SHELL so flox can pick the shell: inside the
+# container $SHELL is unset and `exec` replaces the launching shell, so flox's
+# usual detection (parent process, then $SHELL) fails and warns. FLOX_SHELL is
+# checked first and short-circuits that cleanly.
 _entry_script() {
   case "$CFG_FLOX" in
-    true)  printf 'exec flox activate' ;;
+    true)  printf 'exec env FLOX_SHELL=%s flox activate' "$CFG_SHELL" ;;
     false) printf 'exec %s -l' "$CFG_SHELL" ;;
-    *)     printf 'if [ -d .flox ]; then exec flox activate; else exec %s -l; fi' "$CFG_SHELL" ;;
+    *)     printf 'if [ -d .flox ]; then exec env FLOX_SHELL=%s flox activate; else exec %s -l; fi' "$CFG_SHELL" "$CFG_SHELL" ;;
   esac
 }
 
