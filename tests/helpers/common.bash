@@ -18,6 +18,8 @@ setup_acdev() {
   PROJECT="$WORK/myproject"
   mkdir -p "$PROJECT"
   cd "$PROJECT" || return 1
+  # Canonicalize so $PROJECT matches `pwd -P` used by acdev (macOS /private symlink).
+  PROJECT="$(pwd -P)"
 }
 
 teardown_acdev() {

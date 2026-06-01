@@ -19,14 +19,110 @@ A project is any directory containing .applecontainer.toml.
 EOF
 }
 
-main() {
-  if [ "$#" -eq 0 ]; then
-    usage >&2
-    return 2
+# --- output helpers -------------------------------------------------------
+# Human-facing status goes to stderr so stdout carries only emitted commands
+# (needed for --dry-run assertions).
+emit() { printf '%s\n' "$*" >&2; }
+die()  { printf 'acdev: %s\n' "$*" >&2; exit 1; }
+
+DRY_RUN=0
+
+# Run a `container` subcommand, or print it under --dry-run.
+container_do() {
+  if [ "$DRY_RUN" = 1 ]; then
+    echo "container $*"
+  else
+    command container "$@"
   fi
-  case "$1" in
-    --help|-h) usage; return 0 ;;
-    *) usage >&2; return 2 ;;   # real dispatch added in later tasks
+}
+
+# --- config ---------------------------------------------------------------
+# Globals populated by resolve_config:
+CFG_IMAGE=""; CFG_USER=""; CFG_WORKSPACE=""; CFG_SHELL=""; CFG_FLOX=""
+CFG_ENV=()   # array of "KEY=VALUE"
+
+# Strip surrounding double quotes and edge whitespace.
+_unquote() {
+  local v="$1"
+  v="${v#"${v%%[![:space:]]*}"}"   # ltrim
+  v="${v%"${v##*[![:space:]]}"}"   # rtrim
+  v="${v#\"}"; v="${v%\"}"
+  printf '%s' "$v"
+}
+
+resolve_config() {
+  [ -f .applecontainer.toml ] || die "no .applecontainer.toml in $(pwd)"
+  local section="" line key val
+  while IFS= read -r line || [ -n "$line" ]; do
+    line="${line%%#*}"                      # drop comments
+    line="${line#"${line%%[![:space:]]*}"}" # ltrim
+    [ -z "$line" ] && continue
+    if [[ "$line" =~ ^\[(.+)\]$ ]]; then
+      section="${BASH_REMATCH[1]}"
+      continue
+    fi
+    key="${line%%=*}"; val="${line#*=}"
+    key="$(_unquote "$key")"; val="$(_unquote "$val")"
+    if [ "$section" = "env" ]; then
+      CFG_ENV+=("$key=$val")
+    else
+      case "$key" in
+        image)     CFG_IMAGE="$val" ;;
+        user)      CFG_USER="$val" ;;
+        workspace) CFG_WORKSPACE="$val" ;;
+        shell)     CFG_SHELL="$val" ;;
+        flox)      CFG_FLOX="$val" ;;
+      esac
+    fi
+  done < .applecontainer.toml
+
+  [ -n "$CFG_IMAGE" ] || die "config error: 'image' is required in .applecontainer.toml"
+  [ -n "$CFG_SHELL" ] || CFG_SHELL="bash"
+  [ -n "$CFG_FLOX" ]  || CFG_FLOX="auto"
+  if [ -z "$CFG_WORKSPACE" ]; then
+    CFG_WORKSPACE="/workspaces/$(basename "$(pwd -P)")"
+  fi
+}
+
+# Stable per-project container name: acdev-<basename>-<8 hex of abs path>.
+container_name() {
+  local abs base hash
+  abs="$(pwd -P)"
+  base="$(basename "$abs" | tr -c 'A-Za-z0-9_.-' '-')"
+  hash="$(printf '%s' "$abs" | shasum -a 256 | cut -c1-8)"
+  printf 'acdev-%s-%s' "$base" "$hash"
+}
+
+cmd_up() {
+  resolve_config
+  local name; name="$(container_name)"
+  # shellcheck disable=SC2206
+  local args=(run -d --name "$name" -v "$(pwd -P):$CFG_WORKSPACE" -w "$CFG_WORKSPACE")
+  [ -n "$CFG_USER" ] && args+=(--user "$CFG_USER")
+  local kv
+  # shellcheck disable=SC2068
+  for kv in ${CFG_ENV[@]:-}; do
+    [ -n "$kv" ] && args+=(-e "$kv")
+  done
+  args+=("$CFG_IMAGE" sleep infinity)
+  container_do "${args[@]}"
+}
+
+main() {
+  local cmd="" rest=()
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --dry-run) DRY_RUN=1 ;;
+      --help|-h) usage; return 0 ;;
+      up|shell|status|down) cmd="$1" ;;
+      *) rest+=("$1") ;;
+    esac
+    shift
+  done
+  case "$cmd" in
+    up) cmd_up "${rest[@]:-}" ;;
+    "") usage >&2; return 2 ;;
+    *)  usage >&2; return 2 ;;
   esac
 }
 
