@@ -6,6 +6,7 @@ usage() {
 Usage: acdev <command> [options]
 
 Commands:
+  init      Create a starter .applecontainer.toml in the current directory
   up        Create or reuse this project's container
   shell     Enter the project's container shell
   status    Show the project's container state
@@ -37,6 +38,9 @@ container_do() {
 }
 
 # --- config ---------------------------------------------------------------
+# Hard-coded default image written by `acdev init` (digest-pinned for reproducibility).
+DEFAULT_IMAGE="jbayer/devcontainer-flox:1.12.1@sha256:972c46da0f5e2d80c17d2a8acab1591bf65f3476b0948410ee1db34299314a54"
+
 # Globals populated by resolve_config:
 CFG_IMAGE=""; CFG_USER=""; CFG_WORKSPACE=""; CFG_SHELL=""; CFG_FLOX=""
 CFG_ENV=()   # array of "KEY=VALUE"
@@ -115,6 +119,32 @@ container_state() {
   else
     echo absent
   fi
+}
+
+# Create a starter .applecontainer.toml in the CWD (no-op if one already exists).
+cmd_init() {
+  local cfg=".applecontainer.toml"
+  if [ -f "$cfg" ]; then
+    emit "acdev: $cfg already exists in $(pwd) — nothing to do."
+    return 0
+  fi
+  cat >"$cfg" <<EOF
+# acdev project config — makes this directory acdev-managed.
+# The image is digest-pinned for reproducibility; the rest are optional and
+# show their defaults, commented out. Uncomment and edit to override.
+image = "$DEFAULT_IMAGE"
+
+# user      = "flox"                # exec/run as this user
+# workspace = "/workspaces/<dir>"   # default: /workspaces/<basename of this dir>
+# shell     = "bash"                # shell to drop into
+# flox      = "auto"                # auto = activate iff .flox/ exists; true/false to force
+
+# Environment variables passed into the container:
+# [env]
+# EXAMPLE = "value"
+EOF
+  emit "✔ created $cfg"
+  emit "  'acdev up' will attempt to start it; 'acdev shell' will attempt to enter it."
 }
 
 cmd_up() {
@@ -213,12 +243,13 @@ main() {
     case "$1" in
       --dry-run) DRY_RUN=1 ;;
       --help|-h) usage; return 0 ;;
-      up|shell|status|down) cmd="$1" ;;
+      init|up|shell|status|down) cmd="$1" ;;
       *) rest+=("$1") ;;
     esac
     shift
   done
   case "$cmd" in
+    init)   cmd_init "${rest[@]:-}" ;;
     up)     cmd_up "${rest[@]:-}" ;;
     shell)  cmd_shell "${rest[@]:-}" ;;
     status) cmd_status "${rest[@]:-}" ;;

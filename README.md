@@ -26,13 +26,15 @@ echo 'source '"$PWD"'/hooks/acdev.fish' >> ~/.config/fish/config.fish  # fish
 
 ## Use
 
-1. Drop `.applecontainer.toml` at a project root (see `examples/`).
+1. Run `acdev init` in a project root to generate a starter `.applecontainer.toml`
+   (or copy one from `examples/`).
 2. `cd` into it → you're dropped into the container shell.
 3. Exit the shell → the container keeps running; next `cd` is instant.
 
 Manual commands:
 
 ```bash
+acdev init      # write a starter .applecontainer.toml (no-op if one exists)
 acdev up        # create or reuse the project container
 acdev shell     # enter it
 acdev status    # name / state / image / mount / IP
