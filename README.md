@@ -5,25 +5,25 @@ Flox-activated shell **inside** a hardware-isolated Apple Container — no Docke
 no Dev Containers extension. This recreates the devcontainer-flox workflow using
 Apple's native `container` CLI (Path B: direct CLI orchestration).
 
-`acdev` ships as a **Flox package** (`[build.acdev]`): one build bundles the CLI
-and all three shell hooks, and a ready-to-run **example environment** under
-`example/` demonstrates the whole flow.
+`acdev` is published to FloxHub as **[`jbayer/acdev`](https://hub.flox.dev)** — the
+package bundles the CLI and all three shell hooks. A ready-to-run **example
+environment** under `example/` demonstrates the whole flow.
 
 ## Requirements
 
 - Apple silicon Mac, macOS 26 (Tahoe).
 - [`apple/container`](https://github.com/apple/container) installed and running
   (`container system start`).
-- [Flox](https://flox.dev) on the host — the supported way to build, install, and
-  run `acdev`.
+- [Flox](https://flox.dev) on the host — the supported way to install and run
+  `acdev`.
 
 ## Quick start (Flox)
 
-Build the package and try the bundled example environment:
+Try the bundled example environment (it installs the published package — no build
+step needed):
 
 ```bash
-flox build acdev                  # → ./result-acdev (bundles CLI + hooks)
-flox activate -d example          # puts acdev on PATH, registers the hooks
+flox activate -d example          # installs jbayer/acdev, registers the hooks
 cd example/demo-project           # ships an .applecontainer.toml → handoff fires
 ```
 
@@ -31,37 +31,31 @@ cd example/demo-project           # ships an .applecontainer.toml → handoff fi
 you into the container. Exit the shell and the container keeps running; the next
 `cd` back in is instant.
 
-> The example's `[profile]` references the build output at `../result-acdev`, so
-> run `flox build acdev` first. Re-activate if you rebuild.
-
 ## Use acdev in your own projects (Flox)
 
-The example environment is the template. To make any Flox environment hand off to
-Apple Container on `cd`, build the package and wire it into that environment's
-`[profile]` — add `acdev` to PATH and source the matching hook:
+Install the published package and register the matching hook in your
+environment's `[profile]`. Installing puts `acdev` on PATH and ships the hooks at
+`$FLOX_ENV/share/acdev/hooks/`:
 
 ```toml
 # in your environment's .flox/env/manifest.toml
+[install]
+acdev.pkg-path = "jbayer/acdev"
+
 [profile]
 bash = '''
-  _acdev_pkg="/abs/path/to/acdev/result-acdev"     # output of `flox build acdev`
-  export PATH="$_acdev_pkg/bin:$PATH"
-  . "$_acdev_pkg/share/acdev/hooks/acdev.bash"
+  [ -r "$FLOX_ENV/share/acdev/hooks/acdev.bash" ] && . "$FLOX_ENV/share/acdev/hooks/acdev.bash"
 '''
-# zsh / fish: same idea, sourcing acdev.zsh / acdev.fish
+# zsh / fish: source acdev.zsh / acdev.fish the same way
 ```
 
-See `example/.flox/env/manifest.toml` for the full bash/zsh/fish version.
-
-Then, in any project you want managed:
+See `example/.flox/env/manifest.toml` for the full bash/zsh/fish version. Then, in
+any project you want managed:
 
 ```bash
 acdev init        # write a starter .applecontainer.toml (no-op if one exists)
 cd <that project> # → dropped into the container shell
 ```
-
-> A future `flox publish` will make this a one-liner — `flox install jbayer/acdev`
-> plus sourcing `$FLOX_ENV/share/acdev/hooks/...` — with no local build step.
 
 ## Commands
 

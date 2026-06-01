@@ -1,58 +1,36 @@
 ## acdev example / test environment ----------------------------------
 ##
-## Activating this environment puts the locally-built `acdev` package on
-## PATH and registers the cd->container-shell auto-handoff hooks. Then
-## `cd` into a directory containing `.applecontainer.toml` (e.g. the
-## bundled `demo-project/`) to trigger the handoff.
+## Activating this environment installs the published `jbayer/acdev`
+## package (CLI on PATH + bundled hooks) and registers the
+## cd->container-shell auto-handoff hooks. Then `cd` into a directory
+## containing `.applecontainer.toml` (e.g. the bundled `demo-project/`)
+## to trigger the handoff.
 ##
-## Prerequisite: build the package once from the repo root:
-##     flox build acdev          # -> ./result-acdev
-## then activate this environment:
 ##     flox activate -d example
+##     cd example/demo-project        # -> auto-handoff fires
 ## -------------------------------------------------------------------
 schema-version = "1.12.0"
 
 [install]
-# Nothing from the catalog: acdev is consumed from the repo's own
-# `flox build acdev` output (../result-acdev), wired up in [profile] below.
+# The published package: puts `acdev` on PATH ($FLOX_ENV/bin) and ships
+# the hooks at $FLOX_ENV/share/acdev/hooks/acdev.{bash,zsh,fish}.
+acdev.pkg-path = "jbayer/acdev"
 
 ## Profile script ----------------------------------------------------
 ## Sourced by your interactive shell on `flox activate`, so the hooks'
-## cd/chpwd overrides take effect in the shell you land in. The package
-## is the `result-acdev` symlink produced by `flox build acdev` at the
-## repo root (one level up from this env's project dir).
+## cd/chpwd overrides take effect in the shell you land in. `acdev`
+## itself is already on PATH via [install]; here we only register the
+## matching shell hook from the installed package.
 ## -------------------------------------------------------------------
 [profile]
 bash = '''
-  _acdev_pkg="$(cd "$FLOX_ENV_PROJECT/.." 2>/dev/null && pwd -P)/result-acdev"
-  if [ -x "$_acdev_pkg/bin/acdev" ]; then
-    case ":$PATH:" in *":$_acdev_pkg/bin:"*) ;; *) PATH="$_acdev_pkg/bin:$PATH" ;; esac
-    export PATH
-    . "$_acdev_pkg/share/acdev/hooks/acdev.bash"
-  else
-    echo "acdev: package not built yet -- run 'flox build acdev' in the repo root, then re-activate." >&2
-  fi
+  [ -r "$FLOX_ENV/share/acdev/hooks/acdev.bash" ] && . "$FLOX_ENV/share/acdev/hooks/acdev.bash"
 '''
 zsh = '''
-  _acdev_pkg="$(cd "$FLOX_ENV_PROJECT/.." 2>/dev/null && pwd -P)/result-acdev"
-  if [ -x "$_acdev_pkg/bin/acdev" ]; then
-    case ":$PATH:" in *":$_acdev_pkg/bin:"*) ;; *) PATH="$_acdev_pkg/bin:$PATH" ;; esac
-    export PATH
-    . "$_acdev_pkg/share/acdev/hooks/acdev.zsh"
-  else
-    echo "acdev: package not built yet -- run 'flox build acdev' in the repo root, then re-activate." >&2
-  fi
+  [ -r "$FLOX_ENV/share/acdev/hooks/acdev.zsh" ] && . "$FLOX_ENV/share/acdev/hooks/acdev.zsh"
 '''
 fish = '''
-  set _acdev_pkg (cd "$FLOX_ENV_PROJECT/.." 2>/dev/null; and pwd -P)"/result-acdev"
-  if test -x "$_acdev_pkg/bin/acdev"
-      if not contains "$_acdev_pkg/bin" $PATH
-          set -gx PATH "$_acdev_pkg/bin" $PATH
-      end
-      source "$_acdev_pkg/share/acdev/hooks/acdev.fish"
-  else
-      echo "acdev: package not built yet -- run 'flox build acdev' in the repo root, then re-activate." >&2
-  end
+  test -r "$FLOX_ENV/share/acdev/hooks/acdev.fish"; and source "$FLOX_ENV/share/acdev/hooks/acdev.fish"
 '''
 
 [options]
