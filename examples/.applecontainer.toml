@@ -1,0 +1,12 @@
+# Drop this file at the root of a project to make it acdev-managed.
+# Reuse your existing project image (digest pin recommended).
+image = "jbayer/devcontainer-flox:1.12.1@sha256:972c46da0f5e2d80c17d2a8acab1591bf65f3476b0948410ee1db34299314a54"
+
+# Optional (defaults shown):
+user      = "flox"                  # exec/run as this user
+# workspace = "/workspaces/myproj"  # default: /workspaces/<dir-basename>
+shell     = "bash"                  # shell to drop into
+flox      = "auto"                  # auto = activate iff .flox/ exists; true/false to force
+
+# [env]
+# EXAMPLE = "value"
