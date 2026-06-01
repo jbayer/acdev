@@ -143,6 +143,24 @@ _up_create() {
   container_do "${args[@]}"
 }
 
+cmd_status() {
+  resolve_config
+  local name state line ip
+  name="$(container_name)"
+  state="$(container_state "$name")"
+  printf 'project   %s\n' "$(basename "$(pwd -P)")"
+  printf 'container %s\n' "$name"
+  printf 'state     %s\n' "$state"
+  printf 'image     %s\n' "$CFG_IMAGE"
+  printf 'workspace %s → %s\n' "$(pwd -P)" "$CFG_WORKSPACE"
+  if [ "$state" = running ]; then
+    # IP is the 2nd field of the matching `container ls` row.
+    line="$(command container ls 2>/dev/null | grep -w -- "$name" | head -n1)"
+    ip="$(printf '%s' "$line" | awk '{print $2}')"
+    [ -n "$ip" ] && printf 'ip        %s\n' "$ip"
+  fi
+}
+
 # Build the in-container entry command honoring CFG_FLOX and CFG_SHELL.
 _entry_script() {
   case "$CFG_FLOX" in
@@ -174,6 +192,7 @@ main() {
   case "$cmd" in
     up)     cmd_up "${rest[@]:-}" ;;
     shell)  cmd_shell "${rest[@]:-}" ;;
+    status) cmd_status "${rest[@]:-}" ;;
     "") usage >&2; return 2 ;;
     *)  usage >&2; return 2 ;;
   esac
