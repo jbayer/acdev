@@ -1,7 +1,7 @@
 setup() { load 'helpers/common'; setup_acdev; }
 teardown() { teardown_acdev; }
 
-PINNED='jbayer/devcontainer-flox:1.12.1@sha256:972c46da0f5e2d80c17d2a8acab1591bf65f3476b0948410ee1db34299314a54'
+PINNED='jbayer/devcontainer-flox:1.12.1@sha256:ce5b46c215b06ca580a02fa4793d929855a4b8e3a9d7acd4d47662a4a29be4a3'
 
 @test "init creates .applecontainer.toml when none exists" {
   [ ! -f .applecontainer.toml ]

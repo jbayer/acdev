@@ -1,7 +1,7 @@
 # acdev project config — makes this directory acdev-managed.
 # The image is digest-pinned for reproducibility; the rest are optional and
 # show their defaults, commented out. Uncomment and edit to override.
-image = "jbayer/devcontainer-flox:1.12.1@sha256:972c46da0f5e2d80c17d2a8acab1591bf65f3476b0948410ee1db34299314a54"
+image = "jbayer/devcontainer-flox:1.12.1@sha256:ce5b46c215b06ca580a02fa4793d929855a4b8e3a9d7acd4d47662a4a29be4a3"
 
 # user      = "flox"                # exec/run as this user
 # workspace = "/workspaces/<dir>"   # default: /workspaces/<basename of this dir>
