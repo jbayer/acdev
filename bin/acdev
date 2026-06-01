@@ -95,6 +95,16 @@ container_name() {
   printf 'acdev-%s-%s' "$base" "$hash"
 }
 
+preflight() {
+  if ! command -v container >/dev/null 2>&1; then
+    die "the 'container' CLI was not found. Install Apple Container (apple/container) and ensure it is on your PATH."
+  fi
+  # Probe the daemon with a cheap call; translate the common failure.
+  if ! command container ls >/dev/null 2>&1; then
+    die "cannot reach the container service. Start it with: container system start"
+  fi
+}
+
 # Echoes: running | stopped | absent
 container_state() {
   local name="$1"
@@ -119,6 +129,7 @@ cmd_up() {
     _up_create "$name"; return 0
   fi
 
+  preflight
   case "$(container_state "$name")" in
     running)
       emit "✔ reusing running container" ;;
@@ -145,6 +156,7 @@ _up_create() {
 
 cmd_down() {
   resolve_config
+  [ "$DRY_RUN" != 1 ] && preflight
   local name rm=0 a
   name="$(container_name)"
   for a in "$@"; do [ "$a" = "--rm" ] && rm=1; done
@@ -158,6 +170,7 @@ cmd_down() {
 
 cmd_status() {
   resolve_config
+  [ "$DRY_RUN" != 1 ] && preflight
   local name state line ip
   name="$(container_name)"
   state="$(container_state "$name")"
