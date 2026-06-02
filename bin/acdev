@@ -4,7 +4,7 @@ set -euo pipefail
 # Single source of truth for the acdev version (3-digit semver). The Flox build
 # reads this exact line via `version.command` in .flox/env/manifest.toml, so this
 # is the only place to bump the version.
-ACDEV_VERSION="0.1.3"
+ACDEV_VERSION="0.1.4"
 
 usage() {
   printf 'acdev %s\n\n' "$ACDEV_VERSION"
