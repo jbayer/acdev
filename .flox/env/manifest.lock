@@ -19,7 +19,9 @@
       "acdev": {
         "command": "  mkdir -p \"$out/bin\" \"$out/share/acdev/hooks\" \"$out/share/acdev/nix-cache\"\n  cp bin/acdev \"$out/bin/acdev\"\n  chmod 0755 \"$out/bin/acdev\"\n  cp hooks/acdev.bash hooks/acdev.zsh hooks/acdev.fish \"$out/share/acdev/hooks/\"\n  cp nix-cache/nginx.conf.template \"$out/share/acdev/nix-cache/nginx.conf.template\"\n  # Launcher: pin the template path to the package's absolute location.\n  sed \"s|@TEMPLATE_PATH@|$out/share/acdev/nix-cache/nginx.conf.template|g\" \\\n    bin/acdev-nix-cache >\"$out/bin/acdev-nix-cache\"\n  chmod 0755 \"$out/bin/acdev-nix-cache\"\n",
         "runtime-packages": [],
-        "version": "0.1.3",
+        "version": {
+          "command": "grep '^ACDEV_VERSION=' bin/acdev | cut -d'\"' -f2"
+        },
         "description": "Seamless cd->container-shell handoff on macOS using Apple's container CLI"
       }
     }
