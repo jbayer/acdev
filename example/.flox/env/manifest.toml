@@ -15,7 +15,7 @@ schema-version = "1.12.0"
 # The published package: puts `acdev` on PATH ($FLOX_ENV/bin) and ships
 # the hooks at $FLOX_ENV/share/acdev/hooks/acdev.{bash,zsh,fish}.
 acdev.pkg-path = "jbayer/acdev"
-acdev.version = "0.1.4"
+acdev.version = "0.1.5"
 nginx.pkg-path = "nginx"
 # gum powers the interactive "try it" prompts (see TRY-IT.md).
 gum.pkg-path = "gum"
