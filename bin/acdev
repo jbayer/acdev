@@ -139,6 +139,7 @@ image = "$DEFAULT_IMAGE"
 # workspace = "/workspaces/<dir>"   # default: /workspaces/<basename of this dir>
 # shell     = "bash"                # shell to drop into
 # flox      = "auto"                # auto = activate iff .flox/ exists; true/false to force
+# nix_cache = "http://192.168.64.1:8126"  # use the host nix-cache proxy (see README)
 
 # Environment variables passed into the container:
 # [env]

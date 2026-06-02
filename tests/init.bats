@@ -29,11 +29,13 @@ PINNED='jbayer/devcontainer-flox:1.12.1@sha256:ce5b46c215b06ca580a02fa4793d92985
   grep -q '^# *workspace' .applecontainer.toml
   grep -q '^# *shell' .applecontainer.toml
   grep -q '^# *flox' .applecontainer.toml
+  grep -q '^# *nix_cache' .applecontainer.toml
   # not active
   ! grep -q '^user' .applecontainer.toml
   ! grep -q '^shell' .applecontainer.toml
   ! grep -q '^flox' .applecontainer.toml
   ! grep -q '^workspace' .applecontainer.toml
+  ! grep -q '^nix_cache' .applecontainer.toml
 }
 
 @test "the generated config drives up --dry-run cleanly" {
