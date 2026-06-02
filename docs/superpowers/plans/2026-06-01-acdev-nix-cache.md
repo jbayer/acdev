@@ -173,9 +173,10 @@ Create `bin/acdev-nix-cache`:
 set -euo pipefail
 
 PORT="${ACDEV_NIX_CACHE_PORT:-8126}"
-# 0.0.0.0 avoids a start-ordering dependency on the container bridge; set to
-# 192.168.64.1 to restrict the cache to the container network (see README).
-LISTEN="${ACDEV_NIX_CACHE_LISTEN:-0.0.0.0}"
+# Bind to the container-bridge gateway so the cache is reachable only from the
+# container network, not the LAN. Requires the container system to be running
+# (the bridge owns this IP). Set to 0.0.0.0 to broaden (see README).
+LISTEN="${ACDEV_NIX_CACHE_LISTEN:-192.168.64.1}"
 CACHE_DIR="${ACDEV_NIX_CACHE_DIR:-$HOME/.cache/acdev/nix-cache}"
 
 # Template path: env override (tests) > build-substituted default > repo-relative.
@@ -202,17 +203,24 @@ Then: `chmod +x bin/acdev-nix-cache`
 
 Append to `tests/nix-cache.bats`:
 ```bash
-@test "acdev-nix-cache --print-config renders the template" {
+@test "acdev-nix-cache --print-config renders the template (default listen)" {
   export ACDEV_NIX_CACHE_TEMPLATE="$REPO_ROOT/nix-cache/nginx.conf.template"
   export ACDEV_NIX_CACHE_DIR="$WORK/nixcache"
   export ACDEV_NIX_CACHE_PORT=8126
-  export ACDEV_NIX_CACHE_LISTEN=0.0.0.0
   run acdev-nix-cache --print-config
   [ "$status" -eq 0 ]
-  [[ "$output" == *"listen 0.0.0.0:8126;"* ]]
+  [[ "$output" == *"listen 192.168.64.1:8126;"* ]]
   [[ "$output" == *"proxy_pass https://cache.flox.dev/;"* ]]
   [[ "$output" == *"proxy_pass https://cache.nixos.org/;"* ]]
   [[ "$output" == *"$WORK/nixcache/cache"* ]]
+}
+
+@test "acdev-nix-cache honors ACDEV_NIX_CACHE_LISTEN override" {
+  export ACDEV_NIX_CACHE_TEMPLATE="$REPO_ROOT/nix-cache/nginx.conf.template"
+  export ACDEV_NIX_CACHE_DIR="$WORK/nixcache"
+  export ACDEV_NIX_CACHE_LISTEN=0.0.0.0
+  run acdev-nix-cache --print-config
+  [[ "$output" == *"listen 0.0.0.0:8126;"* ]]
 }
 ```
 (`REPO_ROOT` and `WORK` are exported by `setup_acdev` in `tests/helpers/common.bash`; `bin/` is already on `PATH`.)
@@ -359,9 +367,11 @@ nix_cache = "http://192.168.64.1:8126"
 \`\`\`
 
 acdev then injects the proxy as a preferred Nix substituter (`-e NIX_CONFIG`)
-when it creates the container. The cache listens on `0.0.0.0:8126` by default;
-set `ACDEV_NIX_CACHE_LISTEN=192.168.64.1` to restrict it to the container network,
-and `ACDEV_NIX_CACHE_DIR` to relocate the cache directory.
+when it creates the container. The cache listens on `192.168.64.1:8126` (the
+container-bridge gateway) so it is reachable only from the container network, not
+your LAN — start the container system first (`container system start`) so that IP
+exists. Set `ACDEV_NIX_CACHE_LISTEN=0.0.0.0` to broaden, and `ACDEV_NIX_CACHE_DIR`
+to relocate the cache directory.
 
 > Takes effect on container **creation**. If you add `nix_cache` to an existing
 > project, recreate its container: `acdev down --rm && acdev up`.
@@ -443,7 +453,7 @@ rm -rf /tmp/cachedemo-a /tmp/cachedemo-b /tmp/acdev-cache-test
 ## Notes for the implementer
 
 - **bash 3.2** — keep `bin/acdev` and `bin/acdev-nix-cache` 3.2-compatible (no `${var^^}`, no associative arrays).
-- **Listen address** — spec said `192.168.64.1`; this plan defaults to `0.0.0.0` to avoid a start-ordering dependency on the container bridge, with `ACDEV_NIX_CACHE_LISTEN` to restrict it. Flagged as an intentional refinement.
+- **Listen address** — defaults to `192.168.64.1` (verified bindable; the bridge owns this IP) so the cache is LAN-isolated. Requires the container system to be running before the service starts; `ACDEV_NIX_CACHE_LISTEN=0.0.0.0` broadens it.
 - **Injection is create-time** — `-e NIX_CONFIG` is set on `container run`; changing `nix_cache` requires recreating the container.
 - **No signing anywhere** — passthrough preserves upstream signatures; trusted keys are already in the image.
 - **Don't expand scope** — no push cache, no disk dedup, no auto-managing the cache lifecycle from acdev.
