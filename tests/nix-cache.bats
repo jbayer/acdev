@@ -18,6 +18,7 @@ teardown() { teardown_acdev; }
 @test "trailing slash on nix_cache is normalized" {
   printf 'image = "img:1"\nnix_cache = "http://192.168.64.1:8126/"\n' >.applecontainer.toml
   run acdev up --dry-run
+  [ "$status" -eq 0 ]
   [[ "$output" == *"http://192.168.64.1:8126/flox?priority=1"* ]]
   [[ "$output" != *"8126//flox"* ]]
 }
