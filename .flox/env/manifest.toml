@@ -13,7 +13,9 @@ bats.pkg-path = "bats"
 # bash script that shells out to the system `container` CLI and coreutils.
 [build.acdev]
 description = "Seamless cd->container-shell handoff on macOS using Apple's container CLI"
-version = "0.1.3"
+# Single source of truth is ACDEV_VERSION in bin/acdev; extract it here so the
+# package version and `acdev --version` never drift. Bump the version in bin/acdev.
+version.command = "grep '^ACDEV_VERSION=' bin/acdev | cut -d'\"' -f2"
 runtime-packages = []
 command = '''
   mkdir -p "$out/bin" "$out/share/acdev/hooks" "$out/share/acdev/nix-cache"
