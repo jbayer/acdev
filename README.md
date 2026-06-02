@@ -7,7 +7,7 @@ Apple's native `container` CLI (Path B: direct CLI orchestration).
 
 `acdev` is published to FloxHub as **[`jbayer/acdev`](https://hub.flox.dev)** — the
 package bundles the CLI and all three shell hooks. A ready-to-run **example
-environment** under `example/` demonstrates the whole flow.
+environment** under `acdev/` demonstrates the whole flow.
 
 ## Requirements
 
@@ -23,11 +23,11 @@ Try the bundled example environment (it installs the published package — no bu
 step needed):
 
 ```bash
-flox activate -d example          # installs jbayer/acdev, registers the hooks
-cd example/demo-project           # ships an .applecontainer.toml → handoff fires
+flox activate -d acdev          # installs jbayer/acdev, registers the hooks
+cd acdev/demo-project           # ships an .applecontainer.toml → handoff fires
 ```
 
-`cd`-ing into `example/demo-project` triggers `acdev up && acdev shell` and drops
+`cd`-ing into `acdev/demo-project` triggers `acdev up && acdev shell` and drops
 you into the container. Exit the shell and the container keeps running; the next
 `cd` back in is instant.
 
@@ -49,7 +49,7 @@ bash = '''
 # zsh / fish: source acdev.zsh / acdev.fish the same way
 ```
 
-See `example/.flox/env/manifest.toml` for the full bash/zsh/fish version. Then, in
+See `acdev/.flox/env/manifest.toml` for the full bash/zsh/fish version. Then, in
 any project you want managed:
 
 ```bash
@@ -109,7 +109,7 @@ Start the cache (bundled in the acdev package, run by the example env). The exam
 sets `[services] auto-start = true`, so a plain activate brings it up:
 
 ```bash
-flox activate -d example                    # runs acdev-nix-cache on :8126
+flox activate -d acdev                    # runs acdev-nix-cache on :8126
 ```
 
 Point a project at it in `.applecontainer.toml`:

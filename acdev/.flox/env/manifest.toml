@@ -6,8 +6,8 @@
 ## containing `.applecontainer.toml` (e.g. the bundled `demo-project/`)
 ## to trigger the handoff.
 ##
-##     flox activate -d example
-##     cd example/demo-project        # -> auto-handoff fires
+##     flox activate -d acdev
+##     cd acdev/demo-project        # -> auto-handoff fires
 ## -------------------------------------------------------------------
 schema-version = "1.12.0"
 

@@ -1,4 +1,4 @@
-# Try the acdev example
+# Try the acdev environment
 
 Five minutes, two terminals, on Apple-silicon macOS with the Apple `container`
 CLI and Flox installed. This env installs the published `jbayer/acdev`, runs the
@@ -9,7 +9,7 @@ shared Nix cache as an **auto-started** service, and registers the
 
 ```bash
 container system start          # Apple Container running
-cd example
+cd acdev
 flox activate                   # auto-start brings up the nix-cache service
 ```
 

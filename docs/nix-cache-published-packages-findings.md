@@ -47,7 +47,7 @@ never consult substituters, so `NIX_CONFIG` is irrelevant to them.
 All tests used a fresh container from `jbayer/devcontainer-flox:latest` with the
 proxy injected exactly as acdev does, installing
 `flox/claude-code-plugin-superpowers`. Proxy cache dir:
-`example/.flox/cache/nix-cache/cache`.
+`acdev/.flox/cache/nix-cache/cache`.
 
 ### 1. The proxy is never touched for the published package
 
@@ -172,7 +172,7 @@ NEW=docker.io/jbayer/devcontainer-flox:latest
 G=192.168.64.1:8126
 NIXCFG="extra-substituters = http://$G/flox?priority=1 http://$G/nixos?priority=2"
 PKG=flox/claude-code-plugin-superpowers
-CACHE=example/.flox/cache/nix-cache/cache
+CACHE=acdev/.flox/cache/nix-cache/cache
 
 container run -d --name cc -e NIX_CONFIG="$NIXCFG" "$NEW" sleep infinity
 du -sm "$CACHE"                                   # proxy size before
