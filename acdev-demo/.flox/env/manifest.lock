@@ -14,6 +14,9 @@
         "pkg-path": "nginx"
       }
     },
+    "hook": {
+      "on-activate": "  if [ -t 1 ] && command -v gum >/dev/null 2>&1; then\n    msg=\"🍎 acdev-demo — cd→container-shell handoff on Apple Container\n\nTry it:\n  cd demo-project          auto-handoff into a flox container shell\n\nCommands:\n  acdev init               create .applecontainer.toml in the current dir\n  acdev up                 create or reuse this project's container\n  acdev shell              enter the container shell\n  acdev status             name / state / image / mount / IP\n  acdev down [--rm]        stop the container (--rm also removes it)\"\n    gum style --border rounded --margin \"1 0\" --padding \"1 2\" --border-foreground 39 \"$msg\"\n  fi\n"
+    },
     "profile": {
       "bash": "  [ -r \"$FLOX_ENV/share/acdev/hooks/acdev.bash\" ] && . \"$FLOX_ENV/share/acdev/hooks/acdev.bash\"\n",
       "zsh": "  [ -r \"$FLOX_ENV/share/acdev/hooks/acdev.zsh\" ] && . \"$FLOX_ENV/share/acdev/hooks/acdev.zsh\"\n",

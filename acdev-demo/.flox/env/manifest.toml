@@ -37,6 +37,29 @@ fish = '''
   test -r "$FLOX_ENV/share/acdev/hooks/acdev.fish"; and source "$FLOX_ENV/share/acdev/hooks/acdev.fish"
 '''
 
+## On-activate banner ------------------------------------------------
+## Print a one-time, gum-styled acdev usage cheatsheet when a human
+## activates this demo. The `[ -t 1 ]` guard skips it for non-interactive
+## runs (e.g. `flox activate -- cmd`) so it never pollutes scripted output.
+## -------------------------------------------------------------------
+[hook]
+on-activate = '''
+  if [ -t 1 ] && command -v gum >/dev/null 2>&1; then
+    msg="🍎 acdev-demo — cd→container-shell handoff on Apple Container
+
+Try it:
+  cd demo-project          auto-handoff into a flox container shell
+
+Commands:
+  acdev init               create .applecontainer.toml in the current dir
+  acdev up                 create or reuse this project's container
+  acdev shell              enter the container shell
+  acdev status             name / state / image / mount / IP
+  acdev down [--rm]        stop the container (--rm also removes it)"
+    gum style --border rounded --margin "1 0" --padding "1 2" --border-foreground 39 "$msg"
+  fi
+'''
+
 ## Shared Nix binary cache (nginx proxy_cache in front of cache.flox.dev +
 ## cache.nixos.org). auto-start brings services up with `flox activate` (no
 ## --start-services needed); `acdev init` then detects the proxy on :8126 and
