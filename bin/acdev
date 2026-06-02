@@ -42,7 +42,7 @@ container_do() {
 DEFAULT_IMAGE="jbayer/devcontainer-flox:1.12.1@sha256:ce5b46c215b06ca580a02fa4793d929855a4b8e3a9d7acd4d47662a4a29be4a3"
 
 # Globals populated by resolve_config:
-CFG_IMAGE=""; CFG_USER=""; CFG_WORKSPACE=""; CFG_SHELL=""; CFG_FLOX=""
+CFG_IMAGE=""; CFG_USER=""; CFG_WORKSPACE=""; CFG_SHELL=""; CFG_FLOX=""; CFG_NIX_CACHE=""
 CFG_ENV=()   # array of "KEY=VALUE"
 
 # Strip surrounding double quotes and edge whitespace.
@@ -76,6 +76,7 @@ resolve_config() {
         workspace) CFG_WORKSPACE="$val" ;;
         shell)     CFG_SHELL="$val" ;;
         flox)      CFG_FLOX="$val" ;;
+        nix_cache) CFG_NIX_CACHE="$val" ;;
       esac
     fi
   done < .applecontainer.toml
@@ -180,6 +181,10 @@ _up_create() {
   for kv in "${CFG_ENV[@]:-}"; do
     [ -n "$kv" ] && args+=(-e "$kv")
   done
+  if [ -n "$CFG_NIX_CACHE" ]; then
+    local base="${CFG_NIX_CACHE%/}"   # strip a single trailing slash
+    args+=(-e "NIX_CONFIG=extra-substituters = $base/flox?priority=1 $base/nixos?priority=2")
+  fi
   args+=("$CFG_IMAGE" sleep infinity)
   container_do "${args[@]}"
 }
