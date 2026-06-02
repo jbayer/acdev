@@ -1,7 +1,7 @@
 # Rendered by bin/acdev-nix-cache: @PORT@ @LISTEN@ @CACHE_DIR@ are substituted.
 worker_processes 1;
 daemon off;
-error_log stderr info;
+error_log @CACHE_DIR@/error.log info;
 pid @CACHE_DIR@/nginx.pid;
 events { worker_connections 1024; }
 http {

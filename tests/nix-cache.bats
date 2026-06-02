@@ -33,6 +33,7 @@ teardown() { teardown_acdev; }
   [[ "$output" == *"proxy_pass https://cache.flox.dev/;"* ]]
   [[ "$output" == *"proxy_pass https://cache.nixos.org/;"* ]]
   [[ "$output" == *"$WORK/nixcache/cache"* ]]
+  [[ "$output" == *"error_log $WORK/nixcache/error.log"* ]]
 }
 
 @test "acdev-nix-cache honors ACDEV_NIX_CACHE_LISTEN override" {

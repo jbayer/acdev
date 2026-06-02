@@ -33,4 +33,7 @@ fi
 mkdir -p "$CACHE_DIR/cache" "$CACHE_DIR/client-tmp" "$CACHE_DIR/proxy-tmp"
 rendered="$CACHE_DIR/nginx.conf"
 render >"$rendered"
-exec nginx -c "$rendered"
+# -e points nginx's early-init error log (opened before the config is parsed) at
+# the same writable path as the error_log directive, so it never falls back to
+# its compiled-in default (/var/log/nginx/error.log) and logging stays in one place.
+exec nginx -e "$CACHE_DIR/error.log" -c "$rendered"
