@@ -12,6 +12,30 @@
 
 ---
 
+## Execution status (2026-06-01)
+
+Tasks 1–6 ✅ complete on branch `feat/nix-cache` (subagent-driven, two-stage review each).
+36/36 bats pass; shellcheck clean. Task 7 (publish) is GATED on user approval.
+
+**Task 6 — manual integration results (real Apple Container, verified):**
+- `nginx -t` on the rendered config: syntax OK. nginx starts and serves on `192.168.64.1:8126`
+  (the `/var/log/nginx/error.log` startup *alert* is harmless — our `error_log stderr` applies).
+- Root `/` → `200 "acdev nix-cache proxy"` and is **not** cached (no `X-Cache-Status`).
+- `/flox/nix-cache-info` → 200 (proxied from cache.flox.dev); `/nixos/nix-cache-info` → 200
+  (proxied from cache.nixos.org). Repeat fetch → `X-Cache-Status: HIT`.
+- Real container with `nix_cache` set: `NIX_CONFIG=extra-substituters = …/flox?priority=1 …/nixos?priority=2`
+  is injected and inherited by `container exec`.
+- **Cold** (`flox install hello` in container A): succeeds (signatures verify through the proxy);
+  cache grows 8K → **11M / 13 files**.
+- **Warm** (same install in a *second* project, container B): succeeds; cache stays **flat at 11M / 13 files**
+  → served entirely from the local cache, zero upstream re-download. Core goal proven.
+- `hello` (a nixpkgs pkg) is served via `/nixos/` (cache.nixos.org); `/flox/` returns 404 for it,
+  as expected — nix queries both substituters and uses whichever has the path.
+- 302-redirect concern (from code review) did not materialize — both upstreams serve 200s via CDN;
+  the template caps redirect/404 TTL at 1m as a safety net regardless.
+
+---
+
 ## Verified facts this plan relies on (from the design trace)
 
 - `flox install` honors the Nix `substituters` setting; with the proxy listed as a **preferred** substituter (`?priority=1`) and returning a valid `200 /nix-cache-info`, flox queries it for narinfo. Proven: 5 narinfo GETs hit the proxy.
