@@ -9,7 +9,7 @@ shared Nix cache as an **auto-started** service, and registers the
 
 ```bash
 container system start          # Apple Container running
-cd acdev
+cd acdev-demo
 flox activate                   # auto-start brings up the nix-cache service
 ```
 
