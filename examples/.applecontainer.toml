@@ -7,6 +7,7 @@ user      = "flox"                  # exec/run as this user
 # workspace = "/workspaces/myproj"  # default: /workspaces/<dir-basename>
 shell     = "bash"                  # shell to drop into
 flox      = "auto"                  # auto = activate iff .flox/ exists; true/false to force
+# nix_cache = "http://192.168.64.1:8126"  # use the host nix-cache proxy (see README)
 
 # [env]
 # EXAMPLE = "value"

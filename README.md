@@ -77,6 +77,34 @@ acdev up --dry-run   # print the container commands without running them
 - Reach services running in the container by its IP (`acdev status`) — the
   reliable path on Apple Container.
 
+## Shared Nix binary cache (optional)
+
+Avoid re-downloading Flox/Nix packages across project containers and rebuilds.
+A host-side nginx proxy caches `cache.flox.dev` + `cache.nixos.org` on your SSD;
+containers fetch through it. Signatures pass through, so nothing needs signing.
+
+Start the cache (bundled in the acdev package, run by the example env):
+
+```bash
+flox activate -d example --start-services   # runs acdev-nix-cache on :8126
+```
+
+Point a project at it in `.applecontainer.toml`:
+
+```toml
+nix_cache = "http://192.168.64.1:8126"
+```
+
+acdev then injects the proxy as a preferred Nix substituter (`-e NIX_CONFIG`) when it
+creates the container. The cache listens on `192.168.64.1:8126` (the container-bridge
+gateway) so it is reachable only from the container network, not your LAN — start the
+container system first (`container system start`) so that IP exists. Set
+`ACDEV_NIX_CACHE_LISTEN=0.0.0.0` to broaden, and `ACDEV_NIX_CACHE_DIR` to relocate the
+cache directory.
+
+> Takes effect on container **creation**. If you add `nix_cache` to an existing project,
+> recreate its container: `acdev down --rm && acdev up`.
+
 ## Troubleshooting
 
 `up`, `status`, and `down` preflight the Apple Container CLI and daemon, and fail
