@@ -22,3 +22,23 @@ teardown() { teardown_acdev; }
   [[ "$output" == *"http://192.168.64.1:8126/flox?priority=1"* ]]
   [[ "$output" != *"8126//flox"* ]]
 }
+
+@test "acdev-nix-cache --print-config renders the template (default listen)" {
+  export ACDEV_NIX_CACHE_TEMPLATE="$REPO_ROOT/nix-cache/nginx.conf.template"
+  export ACDEV_NIX_CACHE_DIR="$WORK/nixcache"
+  export ACDEV_NIX_CACHE_PORT=8126
+  run acdev-nix-cache --print-config
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"listen 192.168.64.1:8126;"* ]]
+  [[ "$output" == *"proxy_pass https://cache.flox.dev/;"* ]]
+  [[ "$output" == *"proxy_pass https://cache.nixos.org/;"* ]]
+  [[ "$output" == *"$WORK/nixcache/cache"* ]]
+}
+
+@test "acdev-nix-cache honors ACDEV_NIX_CACHE_LISTEN override" {
+  export ACDEV_NIX_CACHE_TEMPLATE="$REPO_ROOT/nix-cache/nginx.conf.template"
+  export ACDEV_NIX_CACHE_DIR="$WORK/nixcache"
+  export ACDEV_NIX_CACHE_LISTEN=0.0.0.0
+  run acdev-nix-cache --print-config
+  [[ "$output" == *"listen 0.0.0.0:8126;"* ]]
+}

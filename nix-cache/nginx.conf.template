@@ -1,0 +1,35 @@
+# Rendered by bin/acdev-nix-cache: @PORT@ @LISTEN@ @CACHE_DIR@ are substituted.
+worker_processes 1;
+daemon off;
+error_log stderr info;
+pid @CACHE_DIR@/nginx.pid;
+events { worker_connections 1024; }
+http {
+  access_log off;
+  client_body_temp_path @CACHE_DIR@/client-tmp;
+  proxy_temp_path       @CACHE_DIR@/proxy-tmp;
+  proxy_cache_path @CACHE_DIR@/cache levels=1:2 keys_zone=nixcache:50m max_size=20g inactive=90d use_temp_path=off;
+
+  proxy_cache nixcache;
+  proxy_cache_valid 200 301 302 90d;
+  proxy_cache_valid 404 1m;
+  proxy_cache_use_stale error timeout updating http_500 http_502 http_503 http_504;
+  proxy_ssl_server_name on;
+  proxy_http_version 1.1;
+  add_header X-Cache-Status $upstream_cache_status always;
+
+  server {
+    listen @LISTEN@:@PORT@;
+
+    location = / { return 200 "acdev nix-cache proxy\n"; }
+
+    location /flox/ {
+      proxy_pass https://cache.flox.dev/;
+      proxy_set_header Host cache.flox.dev;
+    }
+    location /nixos/ {
+      proxy_pass https://cache.nixos.org/;
+      proxy_set_header Host cache.nixos.org;
+    }
+  }
+}

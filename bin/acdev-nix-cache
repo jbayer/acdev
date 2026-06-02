@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# Host-side launcher for the acdev Nix binary cache (nginx proxy_cache).
+# Renders the bundled nginx template and execs nginx in the foreground.
+set -euo pipefail
+
+PORT="${ACDEV_NIX_CACHE_PORT:-8126}"
+# Bind to the container-bridge gateway so the cache is reachable only from the
+# container network, not the LAN. Requires the container system to be running
+# (the bridge owns this IP). Set to 0.0.0.0 to broaden (see README).
+LISTEN="${ACDEV_NIX_CACHE_LISTEN:-192.168.64.1}"
+CACHE_DIR="${ACDEV_NIX_CACHE_DIR:-$HOME/.cache/acdev/nix-cache}"
+
+# Template path: env override (tests) > build-substituted default > repo-relative.
+TEMPLATE="${ACDEV_NIX_CACHE_TEMPLATE:-@TEMPLATE_PATH@}"
+if [ ! -f "$TEMPLATE" ]; then
+  TEMPLATE="$(cd "$(dirname "$0")/.." && pwd)/nix-cache/nginx.conf.template"
+fi
+[ -f "$TEMPLATE" ] || { printf 'acdev-nix-cache: template not found: %s\n' "$TEMPLATE" >&2; exit 1; }
+
+mkdir -p "$CACHE_DIR/cache" "$CACHE_DIR/client-tmp" "$CACHE_DIR/proxy-tmp"
+rendered="$CACHE_DIR/nginx.conf"
+sed -e "s|@PORT@|$PORT|g" -e "s|@LISTEN@|$LISTEN|g" -e "s|@CACHE_DIR@|$CACHE_DIR|g" \
+  "$TEMPLATE" >"$rendered"
+
+if [ "${1:-}" = "--print-config" ]; then
+  cat "$rendered"
+  exit 0
+fi
+exec nginx -c "$rendered"
