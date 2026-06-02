@@ -133,6 +133,13 @@ Use `ACDEV_NIX_CACHE_DIR` to relocate the cache directory.
 > Takes effect on container **creation**. If you add `nix_cache` to an existing project,
 > recreate its container: `acdev down --rm && acdev up`.
 
+**Coverage.** The proxy accelerates **base catalog** packages (nixpkgs-derived),
+which flox fetches through Nix substituters. It does **not** cache
+**`flox publish`ed** packages — flox copies those from an S3 egress store,
+bypassing substituters entirely — so those re-download on each fresh container.
+Reusing a container (avoid `--rm`) keeps them in `/nix/store`. Details and evidence:
+[docs/nix-cache-published-packages-findings.md](docs/nix-cache-published-packages-findings.md).
+
 ## Troubleshooting
 
 `up`, `status`, and `down` preflight the Apple Container CLI and daemon, and fail
