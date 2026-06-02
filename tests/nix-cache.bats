@@ -40,5 +40,6 @@ teardown() { teardown_acdev; }
   export ACDEV_NIX_CACHE_DIR="$WORK/nixcache"
   export ACDEV_NIX_CACHE_LISTEN=0.0.0.0
   run acdev-nix-cache --print-config
+  [ "$status" -eq 0 ]
   [[ "$output" == *"listen 0.0.0.0:8126;"* ]]
 }

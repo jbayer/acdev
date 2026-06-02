@@ -17,13 +17,17 @@ if [ ! -f "$TEMPLATE" ]; then
 fi
 [ -f "$TEMPLATE" ] || { printf 'acdev-nix-cache: template not found: %s\n' "$TEMPLATE" >&2; exit 1; }
 
-mkdir -p "$CACHE_DIR/cache" "$CACHE_DIR/client-tmp" "$CACHE_DIR/proxy-tmp"
-rendered="$CACHE_DIR/nginx.conf"
-sed -e "s|@PORT@|$PORT|g" -e "s|@LISTEN@|$LISTEN|g" -e "s|@CACHE_DIR@|$CACHE_DIR|g" \
-  "$TEMPLATE" >"$rendered"
+render() {
+  sed -e "s|@PORT@|$PORT|g" -e "s|@LISTEN@|$LISTEN|g" -e "s|@CACHE_DIR@|$CACHE_DIR|g" "$TEMPLATE"
+}
 
+# Introspection: render to stdout with no side effects (no dirs, no files).
 if [ "${1:-}" = "--print-config" ]; then
-  cat "$rendered"
+  render
   exit 0
 fi
+
+mkdir -p "$CACHE_DIR/cache" "$CACHE_DIR/client-tmp" "$CACHE_DIR/proxy-tmp"
+rendered="$CACHE_DIR/nginx.conf"
+render >"$rendered"
 exec nginx -c "$rendered"
