@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Test double for curl, used only by acdev init's nix-cache probe.
+# Shadows the real curl on the bats PATH (tests/helpers is prepended).
+#
+#   ACDEV_FAKE_CACHE_RUNNING=1  -> answer like the live proxy (prints banner)
+#   otherwise                   -> behave like a refused connection (exit 7)
+#
+# acdev's probe is `curl -fsS --max-time 1 http://127.0.0.1:PORT/ | grep -q ...`,
+# so printing the banner on success and nothing on failure is all we need.
+if [ "${ACDEV_FAKE_CACHE_RUNNING:-0}" = 1 ]; then
+  printf 'acdev nix-cache proxy\n'
+  exit 0
+fi
+exit 7   # curl's "failed to connect to host" exit code

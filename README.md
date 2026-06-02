@@ -83,10 +83,11 @@ Avoid re-downloading Flox/Nix packages across project containers and rebuilds.
 A host-side nginx proxy caches `cache.flox.dev` + `cache.nixos.org` on your SSD;
 containers fetch through it. Signatures pass through, so nothing needs signing.
 
-Start the cache (bundled in the acdev package, run by the example env):
+Start the cache (bundled in the acdev package, run by the example env). The example
+sets `[services] auto-start = true`, so a plain activate brings it up:
 
 ```bash
-flox activate -d example --start-services   # runs acdev-nix-cache on :8126
+flox activate -d example                    # runs acdev-nix-cache on :8126
 ```
 
 Point a project at it in `.applecontainer.toml`:
@@ -94,6 +95,11 @@ Point a project at it in `.applecontainer.toml`:
 ```toml
 nix_cache = "http://192.168.64.1:8126"
 ```
+
+You usually don't write that line by hand: when the proxy is up, `acdev init` probes
+it (`http://127.0.0.1:8126/`) and writes the `nix_cache` line **active**; when it's
+down, the same line is left commented as a hint. Override the probed/written port
+with `ACDEV_NIX_CACHE_PORT`.
 
 acdev then injects the proxy as a preferred Nix substituter (`-e NIX_CONFIG`) when it
 creates the container. The cache listens on `0.0.0.0:8126` by default; containers reach

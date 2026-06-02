@@ -128,12 +128,31 @@ container_state() {
   fi
 }
 
+# True (0) when the host nix-cache proxy answers with its banner on loopback.
+# Probed from the host (where `acdev init` runs); the container reaches the same
+# proxy via the bridge gateway 192.168.64.1.
+_nix_cache_running() {
+  command -v curl >/dev/null 2>&1 || return 1
+  local port="${ACDEV_NIX_CACHE_PORT:-8126}"
+  curl -fsS --max-time 1 "http://127.0.0.1:${port}/" 2>/dev/null \
+    | grep -q 'acdev nix-cache proxy'
+}
+
 # Create a starter .applecontainer.toml in the CWD (no-op if one already exists).
 cmd_init() {
   local cfg=".applecontainer.toml"
   if [ -f "$cfg" ]; then
     emit "acdev: $cfg already exists in $(pwd) — nothing to do."
     return 0
+  fi
+  # If the shared nix-cache proxy is up, wire the project to it (active line);
+  # otherwise leave the same line commented as a hint.
+  local port="${ACDEV_NIX_CACHE_PORT:-8126}" cache_line detected=0
+  if _nix_cache_running; then
+    detected=1
+    cache_line="nix_cache = \"http://192.168.64.1:${port}\"  # detected host nix-cache proxy (see README)"
+  else
+    cache_line="# nix_cache = \"http://192.168.64.1:${port}\"  # use the host nix-cache proxy (see README)"
   fi
   cat >"$cfg" <<EOF
 # acdev project config — makes this directory acdev-managed.
@@ -145,13 +164,14 @@ image = "$DEFAULT_IMAGE"
 # workspace = "/workspaces/<dir>"   # default: /workspaces/<basename of this dir>
 # shell     = "bash"                # shell to drop into
 # flox      = "auto"                # auto = activate iff .flox/ exists; true/false to force
-# nix_cache = "http://192.168.64.1:8126"  # use the host nix-cache proxy (see README)
+$cache_line
 
 # Environment variables passed into the container:
 # [env]
 # EXAMPLE = "value"
 EOF
   emit "✔ created $cfg"
+  [ "$detected" = 1 ] && emit "  ↳ detected the host nix-cache proxy on :$port — enabled nix_cache."
   emit "  'acdev up' will attempt to start it; 'acdev shell' will attempt to enter it."
 }
 

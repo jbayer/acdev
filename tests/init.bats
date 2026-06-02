@@ -38,6 +38,29 @@ PINNED='jbayer/devcontainer-flox:1.12.1@sha256:ce5b46c215b06ca580a02fa4793d92985
   ! grep -q '^nix_cache' .applecontainer.toml
 }
 
+@test "init writes nix_cache active (uncommented) when the proxy is detected" {
+  ACDEV_FAKE_CACHE_RUNNING=1 run acdev init
+  [ "$status" -eq 0 ]
+  grep -q '^nix_cache = "http://192.168.64.1:8126"' .applecontainer.toml
+  ! grep -q '^# *nix_cache' .applecontainer.toml
+  # init tells the user it wired up the detected proxy
+  [[ "$output" == *"nix-cache"* ]]
+}
+
+@test "a detected nix_cache flows through to up --dry-run as NIX_CONFIG" {
+  ACDEV_FAKE_CACHE_RUNNING=1 run acdev init
+  [ "$status" -eq 0 ]
+  run acdev up --dry-run
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"NIX_CONFIG=extra-substituters = http://192.168.64.1:8126/flox?priority=1"* ]]
+}
+
+@test "a detected proxy honors ACDEV_NIX_CACHE_PORT in the written URL" {
+  ACDEV_FAKE_CACHE_RUNNING=1 ACDEV_NIX_CACHE_PORT=9000 run acdev init
+  [ "$status" -eq 0 ]
+  grep -q '^nix_cache = "http://192.168.64.1:9000"' .applecontainer.toml
+}
+
 @test "the generated config drives up --dry-run cleanly" {
   run acdev init
   run acdev up --dry-run

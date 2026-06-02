@@ -17,6 +17,8 @@ schema-version = "1.12.0"
 acdev.pkg-path = "jbayer/acdev"
 acdev.version = "0.1.3"
 nginx.pkg-path = "nginx"
+# gum powers the interactive "try it" prompts (see TRY-IT.md).
+gum.pkg-path = "gum"
 
 ## Profile script ----------------------------------------------------
 ## Sourced by your interactive shell on `flox activate`, so the hooks'
@@ -36,8 +38,13 @@ fish = '''
 '''
 
 ## Shared Nix binary cache (nginx proxy_cache in front of cache.flox.dev +
-## cache.nixos.org). Start with: flox activate -d example --start-services
-## Point a project at it with `nix_cache = "http://192.168.64.1:8126"`.
+## cache.nixos.org). auto-start brings services up with `flox activate` (no
+## --start-services needed); `acdev init` then detects the proxy on :8126 and
+## wires new projects to it automatically. Reach it from a project via
+## `nix_cache = "http://192.168.64.1:8126"`.
+[services]
+auto-start = true
+
 [services.nix-cache]
 command = "ACDEV_NIX_CACHE_DIR=\"$FLOX_ENV_CACHE/nix-cache\" acdev-nix-cache"
 
