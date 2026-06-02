@@ -1,14 +1,3 @@
-## acdev example / test environment ----------------------------------
-##
-## Activating this environment installs the published `jbayer/acdev`
-## package (CLI on PATH + bundled hooks) and registers the
-## cd->container-shell auto-handoff hooks. Then `cd` into a directory
-## containing `.applecontainer.toml` (e.g. the bundled `demo-project/`)
-## to trigger the handoff.
-##
-##     flox activate -d acdev-demo
-##     cd acdev-demo/demo-project        # -> auto-handoff fires
-## -------------------------------------------------------------------
 schema-version = "1.12.0"
 
 [install]
@@ -45,7 +34,7 @@ fish = '''
 [hook]
 on-activate = '''
   if [ -t 1 ] && command -v gum >/dev/null 2>&1; then
-    msg="🍎 acdev-demo — cd→container-shell handoff on Apple Container
+    msg="🍎 acdev-demo — cd → container shell handoff to Apple Container
 
 Try it:
   cd demo-project          auto-handoff into a flox container shell
