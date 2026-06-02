@@ -6,6 +6,9 @@
       "acdev": {
         "pkg-path": "jbayer/acdev",
         "version": "0.1.2"
+      },
+      "nginx": {
+        "pkg-path": "nginx"
       }
     },
     "profile": {
@@ -17,6 +20,11 @@
       "systems": [
         "aarch64-darwin"
       ]
+    },
+    "services": {
+      "nix-cache": {
+        "command": "ACDEV_NIX_CACHE_DIR=\"$FLOX_ENV_CACHE/nix-cache\" acdev-nix-cache"
+      }
     }
   },
   "packages": [
@@ -31,7 +39,7 @@
       "rev": "4fc0a2d564564c3e8df1da868e111b05338afc71",
       "rev_count": 28,
       "rev_date": "2026-06-01T23:02:47Z",
-      "scrape_date": "2026-06-01T23:06:10.428714Z",
+      "scrape_date": "2026-06-02T02:39:18.823375Z",
       "stabilities": [
         "staging",
         "unstable"
@@ -42,6 +50,37 @@
       ],
       "outputs": {
         "out": "/nix/store/36xk7swnb5fbf9wkb2w1d035qkjw0q5a-acdev-0.1.2"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "nginx",
+      "broken": false,
+      "derivation": "/nix/store/223g8wsyvhzbyhz2zpwp4bl9dm17j75d-nginx-1.30.2.drv",
+      "description": "Reverse proxy and lightweight webserver",
+      "install_id": "nginx",
+      "license": "[ BSD-2-Clause, BSD-2-Clause, BSD-2-Clause, BSD-2-Clause ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "name": "nginx-1.30.2",
+      "pname": "nginx",
+      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
+      "rev_count": 1004030,
+      "rev_date": "2026-05-23T18:24:25Z",
+      "scrape_date": "2026-05-26T07:06:27.456480Z",
+      "stabilities": [
+        "staging",
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "1.30.2",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "doc": "/nix/store/ybl3mg6lqdkx4gf2p7brr7fyawhkdkxp-nginx-1.30.2-doc",
+        "out": "/nix/store/9pvs1s4krc3fbd6wpq903lhc9r5dbwcv-nginx-1.30.2"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",

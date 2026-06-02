@@ -16,6 +16,7 @@ schema-version = "1.12.0"
 # the hooks at $FLOX_ENV/share/acdev/hooks/acdev.{bash,zsh,fish}.
 acdev.pkg-path = "jbayer/acdev"
 acdev.version = "0.1.2"
+nginx.pkg-path = "nginx"
 
 ## Profile script ----------------------------------------------------
 ## Sourced by your interactive shell on `flox activate`, so the hooks'
@@ -33,6 +34,12 @@ zsh = '''
 fish = '''
   test -r "$FLOX_ENV/share/acdev/hooks/acdev.fish"; and source "$FLOX_ENV/share/acdev/hooks/acdev.fish"
 '''
+
+## Shared Nix binary cache (nginx proxy_cache in front of cache.flox.dev +
+## cache.nixos.org). Start with: flox activate -d example --start-services
+## Point a project at it with `nix_cache = "http://192.168.64.1:8126"`.
+[services.nix-cache]
+command = "ACDEV_NIX_CACHE_DIR=\"$FLOX_ENV_CACHE/nix-cache\" acdev-nix-cache"
 
 [options]
 # This example only targets Apple silicon macOS.
