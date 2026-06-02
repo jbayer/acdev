@@ -96,11 +96,11 @@ nix_cache = "http://192.168.64.1:8126"
 ```
 
 acdev then injects the proxy as a preferred Nix substituter (`-e NIX_CONFIG`) when it
-creates the container. The cache listens on `192.168.64.1:8126` (the container-bridge
-gateway) so it is reachable only from the container network, not your LAN — start the
-container system first (`container system start`) so that IP exists. Set
-`ACDEV_NIX_CACHE_LISTEN=0.0.0.0` to broaden, and `ACDEV_NIX_CACHE_DIR` to relocate the
-cache directory.
+creates the container. The cache listens on `0.0.0.0:8126` by default; containers reach
+it via the host gateway at `192.168.64.1:8126`. Set `ACDEV_NIX_CACHE_LISTEN=192.168.64.1`
+to restrict it to the container network (LAN-isolated) — but note that IP only exists
+while a container is running, so start a project container before the cache in that mode.
+Use `ACDEV_NIX_CACHE_DIR` to relocate the cache directory.
 
 > Takes effect on container **creation**. If you add `nix_cache` to an existing project,
 > recreate its container: `acdev down --rm && acdev up`.

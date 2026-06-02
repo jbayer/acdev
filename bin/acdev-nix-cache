@@ -4,10 +4,13 @@
 set -euo pipefail
 
 PORT="${ACDEV_NIX_CACHE_PORT:-8126}"
-# Bind to the container-bridge gateway so the cache is reachable only from the
-# container network, not the LAN. Requires the container system to be running
-# (the bridge owns this IP). Set to 0.0.0.0 to broaden (see README).
-LISTEN="${ACDEV_NIX_CACHE_LISTEN:-192.168.64.1}"
+# Bind to all interfaces by default so the cache comes up regardless of
+# container-bridge state: 192.168.64.1 only exists while a container is running,
+# so binding it directly fails when you start the cache first. Containers still
+# reach the cache via the gateway. Set ACDEV_NIX_CACHE_LISTEN=192.168.64.1 to
+# restrict it to the container network (LAN-isolated) — but start a container
+# first so the bridge is up. See README.
+LISTEN="${ACDEV_NIX_CACHE_LISTEN:-0.0.0.0}"
 CACHE_DIR="${ACDEV_NIX_CACHE_DIR:-$HOME/.cache/acdev/nix-cache}"
 
 # Template path: env override (tests) > build-substituted default > repo-relative.

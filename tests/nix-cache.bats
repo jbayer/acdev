@@ -29,7 +29,7 @@ teardown() { teardown_acdev; }
   export ACDEV_NIX_CACHE_PORT=8126
   run acdev-nix-cache --print-config
   [ "$status" -eq 0 ]
-  [[ "$output" == *"listen 192.168.64.1:8126;"* ]]
+  [[ "$output" == *"listen 0.0.0.0:8126;"* ]]
   [[ "$output" == *"proxy_pass https://cache.flox.dev/;"* ]]
   [[ "$output" == *"proxy_pass https://cache.nixos.org/;"* ]]
   [[ "$output" == *"$WORK/nixcache/cache"* ]]
@@ -38,8 +38,8 @@ teardown() { teardown_acdev; }
 @test "acdev-nix-cache honors ACDEV_NIX_CACHE_LISTEN override" {
   export ACDEV_NIX_CACHE_TEMPLATE="$REPO_ROOT/nix-cache/nginx.conf.template"
   export ACDEV_NIX_CACHE_DIR="$WORK/nixcache"
-  export ACDEV_NIX_CACHE_LISTEN=0.0.0.0
+  export ACDEV_NIX_CACHE_LISTEN=192.168.64.1
   run acdev-nix-cache --print-config
   [ "$status" -eq 0 ]
-  [[ "$output" == *"listen 0.0.0.0:8126;"* ]]
+  [[ "$output" == *"listen 192.168.64.1:8126;"* ]]
 }

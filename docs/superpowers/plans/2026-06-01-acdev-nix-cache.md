@@ -477,7 +477,7 @@ rm -rf /tmp/cachedemo-a /tmp/cachedemo-b /tmp/acdev-cache-test
 ## Notes for the implementer
 
 - **bash 3.2** — keep `bin/acdev` and `bin/acdev-nix-cache` 3.2-compatible (no `${var^^}`, no associative arrays).
-- **Listen address** — defaults to `192.168.64.1` (verified bindable; the bridge owns this IP) so the cache is LAN-isolated. Requires the container system to be running before the service starts; `ACDEV_NIX_CACHE_LISTEN=0.0.0.0` broadens it.
+- **Listen address** — defaults to `0.0.0.0`. We tried `192.168.64.1` (LAN-isolated) but found `192.168.64.1`/`bridge100` only exists while a container is running, so binding it directly fails when the cache starts first (the natural order, incl. the `[services]` start). `0.0.0.0` decouples cache startup from bridge state; containers still reach it via the gateway. `ACDEV_NIX_CACHE_LISTEN=192.168.64.1` restricts to the container network for those who start a container first.
 - **Injection is create-time** — `-e NIX_CONFIG` is set on `container run`; changing `nix_cache` requires recreating the container.
 - **No signing anywhere** — passthrough preserves upstream signatures; trusted keys are already in the image.
 - **Don't expand scope** — no push cache, no disk dedup, no auto-managing the cache lifecycle from acdev.
