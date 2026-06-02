@@ -39,11 +39,26 @@ write_config() { printf '%s\n' "$@" >"$PROJECT/.applecontainer.toml"; }
   [[ "$output" == *"-e BAZ=qux"* ]]
 }
 
-@test "missing image is a clear error" {
+@test "missing image falls back to the default image (latest)" {
   write_config 'user = "flox"'
   run acdev up --dry-run
-  [ "$status" -ne 0 ]
-  [[ "$output" == *"image"* ]]
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"jbayer/devcontainer-flox:latest sleep infinity"* ]]
+}
+
+@test "ACDEV_DEFAULT_IMAGE overrides the fallback image" {
+  write_config 'user = "flox"'
+  ACDEV_DEFAULT_IMAGE='myreg/custom:9@sha256:abc' run acdev up --dry-run
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"myreg/custom:9@sha256:abc sleep infinity"* ]]
+}
+
+@test "explicit image in config wins over ACDEV_DEFAULT_IMAGE" {
+  write_config 'image = "img:1"'
+  ACDEV_DEFAULT_IMAGE='other:2' run acdev up --dry-run
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"img:1 sleep infinity"* ]]
+  [[ "$output" != *"other:2"* ]]
 }
 
 @test "missing .applecontainer.toml is a clear error" {

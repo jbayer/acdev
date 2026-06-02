@@ -68,6 +68,28 @@ acdev down      # stop it (--rm to also remove)
 acdev up --dry-run   # print the container commands without running them
 ```
 
+## Default image
+
+`image` in `.applecontainer.toml` is optional. When omitted, acdev uses a default
+image, resolved in this order (first match wins):
+
+1. the project's explicit `image = "..."`
+2. the `ACDEV_DEFAULT_IMAGE` environment variable
+3. the built-in default, `jbayer/devcontainer-flox:latest`
+
+The built-in tracks the `latest` tag, so there's no digest to keep updating. To
+pin a specific image — e.g. a digest for reproducibility — set `ACDEV_DEFAULT_IMAGE`,
+which is handy in a flox environment's `[vars]` so every project under it uses the
+same pinned image without editing any `.applecontainer.toml`:
+
+```toml
+[vars]
+ACDEV_DEFAULT_IMAGE = "jbayer/devcontainer-flox:latest@sha256:..."
+```
+
+`acdev init` bakes the resolved default into the file it generates, so setting
+`ACDEV_DEFAULT_IMAGE` before `init` pins that image into the new project.
+
 ## How it works
 
 - One long-lived container per project, kept alive by a `sleep infinity`

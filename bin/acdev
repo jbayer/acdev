@@ -4,7 +4,7 @@ set -euo pipefail
 # Single source of truth for the acdev version (3-digit semver). The Flox build
 # reads this exact line via `version.command` in .flox/env/manifest.toml, so this
 # is the only place to bump the version.
-ACDEV_VERSION="0.1.5"
+ACDEV_VERSION="0.1.6"
 
 usage() {
   printf 'acdev %s\n\n' "$ACDEV_VERSION"
@@ -44,8 +44,11 @@ container_do() {
 }
 
 # --- config ---------------------------------------------------------------
-# Hard-coded default image written by `acdev init` (digest-pinned for reproducibility).
-DEFAULT_IMAGE="jbayer/devcontainer-flox:1.12.1@sha256:4b92ba8463d424c497adab4156485da7d6441551a5f6355b884085f8f5b71800"
+# Default image: used when a project omits `image`, and baked in by `acdev init`.
+# Tracks the `latest` tag so there's no digest to chase. Override it (e.g. to pin
+# a digest for reproducibility) by exporting ACDEV_DEFAULT_IMAGE — for instance in
+# a flox environment's [vars]. Precedence: config `image` > ACDEV_DEFAULT_IMAGE > this.
+DEFAULT_IMAGE="${ACDEV_DEFAULT_IMAGE:-jbayer/devcontainer-flox:latest}"
 
 # Globals populated by resolve_config:
 CFG_IMAGE=""; CFG_USER=""; CFG_WORKSPACE=""; CFG_SHELL=""; CFG_FLOX=""; CFG_NIX_CACHE=""
@@ -87,7 +90,7 @@ resolve_config() {
     fi
   done < .applecontainer.toml
 
-  [ -n "$CFG_IMAGE" ] || die "config error: 'image' is required in .applecontainer.toml"
+  [ -n "$CFG_IMAGE" ] || CFG_IMAGE="$DEFAULT_IMAGE"   # omit `image` to track the default
   [ -n "$CFG_SHELL" ] || CFG_SHELL="bash"
   [ -n "$CFG_FLOX" ]  || CFG_FLOX="auto"
   if [ -z "$CFG_WORKSPACE" ]; then
@@ -156,8 +159,9 @@ cmd_init() {
   fi
   cat >"$cfg" <<EOF
 # acdev project config — makes this directory acdev-managed.
-# The image is digest-pinned for reproducibility; the rest are optional and
-# show their defaults, commented out. Uncomment and edit to override.
+# The image tracks the latest tag; pin a digest here (or set ACDEV_DEFAULT_IMAGE)
+# for reproducibility. Delete this line to follow the acdev default instead. The
+# rest are optional and show their defaults, commented out — uncomment to override.
 image = "$DEFAULT_IMAGE"
 
 # user      = "flox"                # exec/run as this user

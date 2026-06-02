@@ -1,7 +1,7 @@
 setup() { load 'helpers/common'; setup_acdev; }
 teardown() { teardown_acdev; }
 
-PINNED='jbayer/devcontainer-flox:1.12.1@sha256:4b92ba8463d424c497adab4156485da7d6441551a5f6355b884085f8f5b71800'
+PINNED='jbayer/devcontainer-flox:latest'
 
 @test "init creates .applecontainer.toml when none exists" {
   [ ! -f .applecontainer.toml ]
@@ -17,9 +17,15 @@ PINNED='jbayer/devcontainer-flox:1.12.1@sha256:4b92ba8463d424c497adab4156485da7d
   [[ "$output" == *"acdev shell"* ]]
 }
 
-@test "init writes the hard-coded pinned default image, active (uncommented)" {
+@test "init writes the default image (latest tag), active (uncommented)" {
   run acdev init
   grep -qF "image = \"$PINNED\"" .applecontainer.toml
+}
+
+@test "init bakes ACDEV_DEFAULT_IMAGE into the config when set (e.g. a digest pin)" {
+  ACDEV_DEFAULT_IMAGE='myreg/custom:9@sha256:deadbeef' run acdev init
+  [ "$status" -eq 0 ]
+  grep -qF 'image = "myreg/custom:9@sha256:deadbeef"' .applecontainer.toml
 }
 
 @test "init lists the optional settings but comments them out" {

@@ -1,6 +1,8 @@
 # Drop this file at the root of a project to make it acdev-managed.
-# Reuse your existing project image (digest pin recommended).
-image = "jbayer/devcontainer-flox:1.12.1@sha256:4b92ba8463d424c497adab4156485da7d6441551a5f6355b884085f8f5b71800"
+# `image` is optional: omit it to track acdev's default (jbayer/devcontainer-flox:latest)
+# or the ACDEV_DEFAULT_IMAGE env var. Set it explicitly to reuse your own project
+# image — a digest pin (image@sha256:...) is recommended for reproducibility.
+image = "jbayer/devcontainer-flox:latest"
 
 # Optional (defaults shown):
 user      = "flox"                  # exec/run as this user

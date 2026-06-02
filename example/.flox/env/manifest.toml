@@ -42,6 +42,13 @@ fish = '''
 ## --start-services needed); `acdev init` then detects the proxy on :8126 and
 ## wires new projects to it automatically. Reach it from a project via
 ## `nix_cache = "http://192.168.64.1:8126"`.
+## Override acdev's default container image for every project activated under
+## this environment. acdev's built-in default is jbayer/devcontainer-flox:latest;
+## uncomment and set a digest here to pin it (reproducible), without editing any
+## project's .applecontainer.toml. A project's explicit `image` still wins.
+[vars]
+# ACDEV_DEFAULT_IMAGE = "jbayer/devcontainer-flox:latest@sha256:..."
+
 [services]
 auto-start = true
 
