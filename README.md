@@ -158,6 +158,20 @@ fast with an actionable message (exit 1) instead of a cryptic error:
   acdev: cannot reach the container service. Start it with: container system start
   ```
 
+- **Container fails to start with a generic `createProcess` error:**
+
+  ```
+  Error: failed to start process ... (cause: "internalError: "createProcess"")
+  ```
+
+  Usually the `user` in `.applecontainer.toml` names a user that doesn't exist in
+  the image. The default image (`jbayer/devcontainer-flox:latest`) ships a `flox`
+  user, but most stock images don't — e.g. `image = "ubuntu"` with `user = "flox"`
+  fails this way, since Apple Container can't start a process as a missing user and
+  surfaces it as an opaque `createProcess` failure. Set `user` to one that exists in
+  the image (stock `ubuntu` has `root` and `ubuntu`), or drop the `user` line to run
+  as the image default. Verify with `container run --rm <image> id <user>`.
+
 `acdev init` and `acdev up --dry-run` deliberately skip these checks — they don't
 touch the daemon, so they work with `container` absent or stopped.
 
