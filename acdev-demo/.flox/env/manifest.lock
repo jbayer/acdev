@@ -5,7 +5,7 @@
     "install": {
       "acdev": {
         "pkg-path": "jbayer/acdev",
-        "version": "0.1.6"
+        "version": "0.1.7"
       },
       "gum": {
         "pkg-path": "gum"
@@ -15,7 +15,7 @@
       }
     },
     "profile": {
-      "common": "msg=\"🍎 acdev-demo — cd → container shell handoff to Apple Container\n\nTry it:\n  cd demo-project          auto-handoff into a flox container shell\n\nCommands:\n  acdev init               create .applecontainer.toml in the current dir\n  acdev up                 create or reuse this project's container\n  acdev shell              enter the container shell\n  acdev status             name / state / image / mount / IP\n  acdev down [--rm]        stop the container (--rm also removes it)\"\n\ngum style --border rounded --margin \"1 0\" --padding \"1 2\" --border-foreground 39 \"$msg\"\n",
+      "common": "msg=\"🍎 acdev-demo — cd → container shell handoff to Apple Container\n\nTry it:\n  cd demo-project          auto-handoff into a flox container shell\n\nCommands:\n  acdev init               create .applecontainer.toml in the current dir\n  acdev up                 create or reuse this project's container\n  acdev shell              enter the container shell\n  acdev status             name / state / image + digest / mount / IP\n  acdev down [--rm]        stop the container (--rm also removes it)\"\n\ngum style --border rounded --margin \"1 0\" --padding \"1 2\" --border-foreground 39 \"$msg\"\n",
       "bash": "  [ -r \"$FLOX_ENV/share/acdev/hooks/acdev.bash\" ] && . \"$FLOX_ENV/share/acdev/hooks/acdev.bash\"\n",
       "zsh": "  [ -r \"$FLOX_ENV/share/acdev/hooks/acdev.zsh\" ] && . \"$FLOX_ENV/share/acdev/hooks/acdev.zsh\"\n",
       "fish": "  test -r \"$FLOX_ENV/share/acdev/hooks/acdev.fish\"; and source \"$FLOX_ENV/share/acdev/hooks/acdev.fish\"\n"
@@ -35,26 +35,25 @@
   "packages": [
     {
       "attr_path": "acdev",
-      "derivation": "/nix/store/90k1ijcf29n8hbsr1vlkh42hh77rysbv-acdev-0.1.6.drv",
+      "derivation": "/nix/store/59gbzc95ciqb3fivpycnprfl19k863li-acdev-0.1.7.drv",
       "description": "Seamless cd->container-shell handoff on macOS using Apple's container CLI",
       "install_id": "acdev",
-      "locked_url": "ssh://git@github.com/jbayer/acdev.git?rev=a907b36f632fa74b49d2f18eac1ea4badb8cd3b7",
-      "name": "acdev-0.1.6",
+      "locked_url": "ssh://git@github.com/jbayer/acdev.git?rev=a623c94be9489865b82129544b3d5253e3cd425d",
+      "name": "acdev-0.1.7",
       "pname": "acdev",
-      "rev": "a907b36f632fa74b49d2f18eac1ea4badb8cd3b7",
-      "rev_count": 52,
-      "rev_date": "2026-06-02T22:27:58Z",
-      "scrape_date": "2026-06-02T22:30:11.986960Z",
+      "rev": "a623c94be9489865b82129544b3d5253e3cd425d",
+      "rev_count": 65,
+      "rev_date": "2026-10-07T20:05:08Z",
+      "scrape_date": "2026-10-07T20:06:03.381097Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
-      "version": "0.1.6",
+      "version": "0.1.7",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/y5l4q55v0lbspvalg5ibvzm84qy4pm2p-acdev-0.1.6"
+        "out": "/nix/store/cbf87ymm1s09hpqi9hy9fpzrvq7pjlzp-acdev-0.1.7"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -63,28 +62,27 @@
     {
       "attr_path": "gum",
       "broken": false,
-      "derivation": "/nix/store/j8ybq6l473j7zinlzgivynnqb9zvl76a-gum-0.17.0.drv",
+      "derivation": "/nix/store/mcjfcpnm19skgpxvbv6h9n8djiwhylb5-gum-2.0.2.drv",
       "description": "Tasty Bubble Gum for your shell",
       "install_id": "gum",
       "license": "MIT",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
-      "name": "gum-0.17.0",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "name": "gum-2.0.2",
       "pname": "gum",
-      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
-      "rev_count": 1004030,
-      "rev_date": "2026-05-23T18:24:25Z",
-      "scrape_date": "2026-05-26T07:06:04.219243Z",
+      "rev": "151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "rev_count": 1086391,
+      "rev_date": "2026-10-06T04:29:54Z",
+      "scrape_date": "2026-10-07T04:59:39.001758Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "0.17.0",
+      "version": "2.0.2",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/6jb5frkadampkcmbjynch118cc4smzfj-gum-0.17.0"
+        "out": "/nix/store/9r4w4mz06ziciaingw3ndq63xkfn3xwp-gum-2.0.2"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
@@ -93,29 +91,28 @@
     {
       "attr_path": "nginx",
       "broken": false,
-      "derivation": "/nix/store/223g8wsyvhzbyhz2zpwp4bl9dm17j75d-nginx-1.30.2.drv",
+      "derivation": "/nix/store/n772hk8yg5qvbizrag8a9w3jywx5g1h7-nginx-1.30.5.drv",
       "description": "Reverse proxy and lightweight webserver",
       "install_id": "nginx",
-      "license": "[ BSD-2-Clause, BSD-2-Clause, BSD-2-Clause, BSD-2-Clause ]",
-      "locked_url": "https://github.com/flox/nixpkgs?rev=64c08a7ca051951c8eae34e3e3cb1e202fe36786",
-      "name": "nginx-1.30.2",
+      "license": "[ BSD-2-Clause, BSD-2-Clause ]",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "name": "nginx-1.30.5",
       "pname": "nginx",
-      "rev": "64c08a7ca051951c8eae34e3e3cb1e202fe36786",
-      "rev_count": 1004030,
-      "rev_date": "2026-05-23T18:24:25Z",
-      "scrape_date": "2026-05-26T07:06:27.456480Z",
+      "rev": "151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "rev_count": 1086391,
+      "rev_date": "2026-10-06T04:29:54Z",
+      "scrape_date": "2026-10-07T05:00:02.168054Z",
       "stabilities": [
-        "staging",
         "unstable"
       ],
       "unfree": false,
-      "version": "1.30.2",
+      "version": "1.30.5",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "doc": "/nix/store/ybl3mg6lqdkx4gf2p7brr7fyawhkdkxp-nginx-1.30.2-doc",
-        "out": "/nix/store/9pvs1s4krc3fbd6wpq903lhc9r5dbwcv-nginx-1.30.2"
+        "doc": "/nix/store/s9zq3wyd2bdfwb58rk2648yf2wsryvhj-nginx-1.30.5-doc",
+        "out": "/nix/store/81a75xq2ilmn8dnrb1b7m8siyprmaq94-nginx-1.30.5"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
