@@ -2,7 +2,7 @@
 #
 # No `image` line: this project tracks acdev's default image
 # (jbayer/devcontainer-flox:latest). To pin one image for every project in this
-# environment, set ACDEV_DEFAULT_IMAGE in the example env's [vars] (see manifest).
+# environment, set ACDEV_DEFAULT_IMAGE in acdev-demo's [vars] (see its manifest).
 # To pin just this project, add an explicit `image = "...@sha256:..."`.
 
 # user      = "flox"                # exec/run as this user

@@ -254,8 +254,8 @@ cmd_status() {
   fi
   printf 'workspace %s → %s\n' "$(pwd -P)" "$CFG_WORKSPACE"
   if [ "$state" = running ]; then
-    # IP is the ADDR column (6th field) of the matching `container ls` row:
-    # "ID IMAGE OS ARCH STATE ADDR CPUS MEMORY STARTED". Real ADDR carries a
+    # IP is the 6th field of the matching `container ls` row:
+    # "ID IMAGE OS ARCH STATE IP CPUS MEMORY STARTED". Real IP carries a
     # CIDR suffix (e.g. "192.168.64.3/24"); strip it to a bare IP.
     line="$(command container ls 2>/dev/null | grep -w -- "$name" | head -n1)"
     ip="$(printf '%s' "$line" | awk '{print $6}')"
