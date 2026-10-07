@@ -16,7 +16,11 @@
 #
 # `container inspect <name>` returns pretty-printed JSON like container 1.5.0,
 # with the image digest at configuration.image.descriptor.digest. It fails with
-# "container not found" when the container is absent.
+# "container not found" when the container is absent. The container's image
+# comes from $ACDEV_FAKE_REF (default docker.io/img:1) and $ACDEV_FAKE_DIGEST.
+#
+# `container image inspect <ref>` reports $ACDEV_FAKE_IMAGE_DIGEST as the local
+# image's index digest, or fails like a missing image when that is unset.
 set -euo pipefail
 echo "$*" >>"${ACDEV_FAKE_LOG:-/dev/null}"
 
@@ -57,7 +61,7 @@ case "$1" in
           "mediaType" : "application/vnd.oci.image.index.v1+json",
           "size" : 856
         },
-        "reference" : "docker.io/img:1"
+        "reference" : "${ACDEV_FAKE_REF:-docker.io/img:1}"
       }
     },
     "id" : "$name",
@@ -65,6 +69,32 @@ case "$1" in
   }
 ]
 JSON
+    ;;
+  image)
+    if [ "${2:-}" = inspect ]; then
+      if [ -z "${ACDEV_FAKE_IMAGE_DIGEST:-}" ]; then
+        echo "Error: image not found: ${3:-}" >&2
+        exit 1
+      fi
+      cat <<JSON
+[
+  {
+    "configuration" : {
+      "descriptor" : {
+        "digest" : "sha256:$ACDEV_FAKE_IMAGE_DIGEST",
+        "mediaType" : "application/vnd.oci.image.index.v1+json",
+        "size" : 856
+      },
+      "name" : "docker.io/${3:-}"
+    },
+    "id" : "$ACDEV_FAKE_IMAGE_DIGEST",
+    "variants" : [
+      { "descriptor" : { "digest" : "sha256:0000000000000000000000000000000000000000000000000000000000000000" } }
+    ]
+  }
+]
+JSON
+    fi
     ;;
   *) : ;;   # run/start/stop/exec/etc. just get logged
 esac

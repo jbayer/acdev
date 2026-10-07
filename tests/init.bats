@@ -17,15 +17,24 @@ PINNED='jbayer/devcontainer-flox:latest'
   [[ "$output" == *"acdev shell"* ]]
 }
 
-@test "init writes the default image (latest tag), active (uncommented)" {
+@test "init shows the default image but leaves it commented out" {
   run acdev init
-  grep -qF "image = \"$PINNED\"" .applecontainer.toml
+  grep -qE "^# *image *= \"$PINNED\"" .applecontainer.toml
+  ! grep -q '^image' .applecontainer.toml
 }
 
-@test "init bakes ACDEV_DEFAULT_IMAGE into the config when set (e.g. a digest pin)" {
+@test "init shows ACDEV_DEFAULT_IMAGE when set, still commented so the project follows it" {
   ACDEV_DEFAULT_IMAGE='myreg/custom:9@sha256:deadbeef' run acdev init
   [ "$status" -eq 0 ]
-  grep -qF 'image = "myreg/custom:9@sha256:deadbeef"' .applecontainer.toml
+  grep -qE '^# *image *= "myreg/custom:9@sha256:deadbeef"' .applecontainer.toml
+  ! grep -q '^image' .applecontainer.toml
+}
+
+@test "a project made by init follows a later ACDEV_DEFAULT_IMAGE" {
+  run acdev init
+  ACDEV_DEFAULT_IMAGE='myreg/pinned:2' run acdev up --dry-run
+  [ "$status" -eq 0 ]
+  [[ "$output" == *"myreg/pinned:2 sleep infinity"* ]]
 }
 
 @test "init lists the optional settings but comments them out" {

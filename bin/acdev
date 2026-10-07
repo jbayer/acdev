@@ -4,7 +4,7 @@ set -euo pipefail
 # Single source of truth for the acdev version (3-digit semver). The Flox build
 # reads this exact line via `version.command` in .flox/env/manifest.toml, so this
 # is the only place to bump the version.
-ACDEV_VERSION="0.1.7"
+ACDEV_VERSION="0.1.8"
 
 usage() {
   printf 'acdev %s\n\n' "$ACDEV_VERSION"
@@ -131,6 +131,65 @@ container_state() {
   fi
 }
 
+# --- image identity -------------------------------------------------------
+# A container keeps the image it was created from, whatever the config says
+# now. `container inspect` records it once, at configuration.image:
+# "reference" (as given at create time) and descriptor "digest".
+_container_image_ref() {
+  command container inspect "$1" 2>/dev/null \
+    | grep '"reference"' | head -n1 | sed 's/.*"reference" *: *"\([^"]*\)".*/\1/' || true
+}
+_container_image_digest() {
+  command container inspect "$1" 2>/dev/null \
+    | grep '"digest"' | grep -o 'sha256:[0-9a-f]*' | head -n1 || true
+}
+# Index digest of a local image; empty if it isn't on this machine. The first
+# "digest" in `container image inspect` is the index; later ones are variants.
+_local_image_digest() {
+  command container image inspect "$1" 2>/dev/null \
+    | grep '"digest"' | grep -o 'sha256:[0-9a-f]*' | head -n1 || true
+}
+# Normalize an image reference for comparison: drop docker.io/ and library/,
+# default the tag to :latest, and drop the tag when a digest is present
+# (container records "x:1.0@sha256:…" as "docker.io/x@sha256:…").
+_norm_ref() {
+  local r="$1" digest="" last
+  case "$r" in *@*) digest="@${r#*@}"; r="${r%%@*}" ;; esac
+  r="${r#docker.io/}"; r="${r#library/}"
+  last="${r##*/}"
+  if [ -n "$digest" ]; then
+    case "$last" in *:*) r="${r%:*}" ;; esac
+    printf '%s%s' "$r" "$digest"
+  else
+    case "$last" in *:*) ;; *) r="$r:latest" ;; esac
+    printf '%s' "$r"
+  fi
+}
+_short() { local d="${1#sha256:}"; printf '%s' "${d:0:12}"; }
+
+# Warn (never fail) when an existing container's image isn't what the config
+# resolves to. Compares digests when the config pins one or the image is local;
+# otherwise falls back to comparing normalized references. No registry calls,
+# so a newer upstream :latest that hasn't been pulled isn't detected.
+_warn_if_stale_image() {
+  local name="$1" have_ref have want=""
+  have="$(_container_image_digest "$name")"
+  [ -n "$have" ] || return 0
+  have_ref="$(_container_image_ref "$name")"
+  case "$CFG_IMAGE" in
+    *@sha256:*) want="sha256:${CFG_IMAGE##*@sha256:}" ;;
+    *)          want="$(_local_image_digest "$CFG_IMAGE")" ;;
+  esac
+  if [ -n "$want" ]; then
+    [ "$want" = "$have" ] && return 0
+  else
+    [ "$(_norm_ref "$have_ref")" = "$(_norm_ref "$CFG_IMAGE")" ] && return 0
+  fi
+  emit "⚠ this container was created from ${have_ref:-an unknown image} ($(_short "$have")),"
+  emit "  but the config resolves to $CFG_IMAGE${want:+ ($(_short "$want"))}."
+  emit "  Recreate it to switch: acdev down --rm && acdev up"
+}
+
 # True (0) when the host nix-cache proxy answers with its banner on loopback.
 # Probed from the host (where `acdev init` runs); the container reaches the same
 # proxy via the bridge gateway 192.168.64.1.
@@ -159,11 +218,10 @@ cmd_init() {
   fi
   cat >"$cfg" <<EOF
 # acdev project config — makes this directory acdev-managed.
-# The image tracks the latest tag; pin a digest here (or set ACDEV_DEFAULT_IMAGE)
-# for reproducibility. Delete this line to follow the acdev default instead. The
-# rest are optional and show their defaults, commented out — uncomment to override.
-image = "$DEFAULT_IMAGE"
-
+# Every setting is optional and shows its default, commented out. Uncomment to
+# override. Leaving image commented makes this project follow ACDEV_DEFAULT_IMAGE
+# (or acdev's built-in default); set it to pin just this project, e.g. to a digest.
+# image     = "$DEFAULT_IMAGE"
 # user      = "flox"                # exec/run as this user
 # workspace = "/workspaces/<dir>"   # default: /workspaces/<basename of this dir>
 # shell     = "bash"                # shell to drop into
@@ -194,10 +252,12 @@ cmd_up() {
   preflight
   case "$(container_state "$name")" in
     running)
-      emit "✔ reusing running container" ;;
+      emit "✔ reusing running container"
+      _warn_if_stale_image "$name" ;;
     stopped)
       container_do start "$name" >/dev/null
-      emit "✔ restarted container" ;;
+      emit "✔ restarted container"
+      _warn_if_stale_image "$name" ;;
     absent)
       _up_create "$name" >/dev/null
       emit "✔ created container" ;;
@@ -245,11 +305,9 @@ cmd_status() {
   printf 'state     %s\n' "$state"
   printf 'image     %s\n' "$CFG_IMAGE"
   if [ "$state" != absent ]; then
-    # `image` above is what the config asks for; the container keeps whatever
-    # it was created from. Its inspect JSON carries exactly one digest, at
-    # configuration.image.descriptor.digest.
-    digest="$(command container inspect "$name" 2>/dev/null \
-      | grep '"digest"' | grep -o 'sha256:[0-9a-f]*' | head -n1)" || true
+    # `image` above is what the config asks for; digest is what the
+    # container was actually created from.
+    digest="$(_container_image_digest "$name")"
     [ -n "$digest" ] && printf 'digest    %s\n' "$digest"
   fi
   printf 'workspace %s → %s\n' "$(pwd -P)" "$CFG_WORKSPACE"

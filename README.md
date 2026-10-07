@@ -73,7 +73,8 @@ Every key in `.applecontainer.toml` is optional; an empty file works.
 | `[env]` | none | `KEY = "value"` pairs passed into the container |
 
 **Image resolution:** the project's `image`, else `$ACDEV_DEFAULT_IMAGE`, else
-`jbayer/devcontainer-flox:latest`. To pin every project under an environment
+`jbayer/devcontainer-flox:latest`. `acdev init` leaves `image` commented out,
+so new projects follow the default. To pin every project under an environment
 (for example to a digest), set it in that environment's `[vars]`:
 
 ```toml
@@ -85,6 +86,9 @@ ACDEV_DEFAULT_IMAGE = "jbayer/devcontainer-flox:latest@sha256:..."
 > existing container, so after changing `image`, `user`, `workspace`, `[env]`,
 > or `nix_cache`, or to pick up a newer `:latest`, recreate it:
 > `acdev down --rm && container image pull <image> && acdev up`.
+> When the image is what changed, `acdev up` warns that the container is
+> stale. It compares against images already on your Mac, so it won't notice a
+> newer `:latest` you haven't pulled.
 
 ## How it works
 
@@ -121,11 +125,11 @@ through unchanged.
   service`**: install Apple `container`, or run `container system start`.
   `up`, `status`, and `down` check this first; `init` and `--dry-run` don't
   need the daemon.
-- **Wrong image or Flox version in the container:** `acdev status` shows both
-  the configured `image` and the `digest` the container was actually created
-  from. If they don't match what you expect, check for an `image` line in
-  `.applecontainer.toml`, then recreate the container (see the note under
-  [Configuration](#configuration)).
+- **Wrong image or Flox version in the container:** `acdev up` warns when the
+  container's image doesn't match the config, and `acdev status` shows both
+  the configured `image` and the `digest` the container was created from. Check
+  for an `image` line in `.applecontainer.toml`, then recreate the container
+  (see the note under [Configuration](#configuration)).
 - **`internalError: "createProcess"` on start:** `user` names a user that
   doesn't exist in the image. The default image has `flox`; stock `ubuntu` has
   only `root` and `ubuntu`. Check with `container run --rm <image> id <user>`.
