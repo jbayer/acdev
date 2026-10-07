@@ -5,7 +5,7 @@
     "install": {
       "acdev": {
         "pkg-path": "jbayer/acdev",
-        "version": "0.1.7"
+        "version": "0.1.8"
       },
       "gum": {
         "pkg-path": "gum"
@@ -35,25 +35,25 @@
   "packages": [
     {
       "attr_path": "acdev",
-      "derivation": "/nix/store/59gbzc95ciqb3fivpycnprfl19k863li-acdev-0.1.7.drv",
+      "derivation": "/nix/store/awq534cb15b73xci338jyc9b2675247z-acdev-0.1.8.drv",
       "description": "Seamless cd->container-shell handoff on macOS using Apple's container CLI",
       "install_id": "acdev",
-      "locked_url": "ssh://git@github.com/jbayer/acdev.git?rev=a623c94be9489865b82129544b3d5253e3cd425d",
-      "name": "acdev-0.1.7",
+      "locked_url": "ssh://git@github.com/jbayer/acdev.git?rev=c563717b49b9f90926a6abe61769432088abab75",
+      "name": "acdev-0.1.8",
       "pname": "acdev",
-      "rev": "a623c94be9489865b82129544b3d5253e3cd425d",
-      "rev_count": 65,
-      "rev_date": "2026-10-07T20:05:08Z",
-      "scrape_date": "2026-10-07T20:06:03.381097Z",
+      "rev": "c563717b49b9f90926a6abe61769432088abab75",
+      "rev_count": 68,
+      "rev_date": "2026-10-07T21:05:07Z",
+      "scrape_date": "2026-10-07T21:06:33.592208Z",
       "stabilities": [
         "unstable"
       ],
-      "version": "0.1.7",
+      "version": "0.1.8",
       "outputs_to_install": [
         "out"
       ],
       "outputs": {
-        "out": "/nix/store/cbf87ymm1s09hpqi9hy9fpzrvq7pjlzp-acdev-0.1.7"
+        "out": "/nix/store/hhz2dvr2hpngsdb2f2g34x1hrn8rll9q-acdev-0.1.8"
       },
       "system": "aarch64-darwin",
       "group": "toplevel",
