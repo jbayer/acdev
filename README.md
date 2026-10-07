@@ -8,6 +8,8 @@ Containers extension.
 `acdev` is published on FloxHub as `jbayer/acdev` (the CLI plus bash/zsh/fish
 hooks). The `acdev-demo/` environment shows the whole flow.
 
+![acdev: the host Flox environment, per-project microVMs, and the shared Nix cache path](docs/images/acdev-architecture.svg)
+
 ## Requirements
 
 - Apple silicon Mac on macOS 26 (Tahoe)
