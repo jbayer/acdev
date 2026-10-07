@@ -28,3 +28,6 @@ command = '''
     bin/acdev-nix-cache >"$out/bin/acdev-nix-cache"
   chmod 0755 "$out/bin/acdev-nix-cache"
 '''
+
+[options]
+systems=["aarch64-darwin"]
