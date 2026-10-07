@@ -1,44 +1,35 @@
-# acdev — seamless cd→container-shell handoff on macOS with Apple Container
+# acdev — cd into a project, land in an Apple Container
 
-`cd` into a project that has an `.applecontainer.toml` and you land in a
-Flox-activated shell **inside** a hardware-isolated Apple Container — no Docker,
-no Dev Containers extension. This recreates the devcontainer-flox workflow using
-Apple's native `container` CLI (Path B: direct CLI orchestration).
+`cd` into a directory that has an `.applecontainer.toml` and you land in a
+Flox-activated shell inside a hardware-isolated Linux microVM, using Apple's
+native [`container`](https://github.com/apple/container) CLI. No Docker, no Dev
+Containers extension.
 
-`acdev` is published to FloxHub as **[`jbayer/acdev`](https://hub.flox.dev)** — the
-package bundles the CLI and all three shell hooks. A ready-to-run **example
-environment** under `acdev-demo/` demonstrates the whole flow.
+`acdev` is published on FloxHub as `jbayer/acdev` (the CLI plus bash/zsh/fish
+hooks). The `acdev-demo/` environment shows the whole flow.
 
 ## Requirements
 
-- Apple silicon Mac, macOS 26 (Tahoe).
-- [`apple/container`](https://github.com/apple/container) installed and running
-  (`container system start`).
-- [Flox](https://flox.dev) on the host — the supported way to install and run
-  `acdev`.
+- Apple silicon Mac on macOS 26 (Tahoe)
+- Apple `container` 1.5.0 (the version acdev is tested with), installed and
+  running (`container system start`)
+- [Flox](https://flox.dev) on the host
 
-## Quick start (Flox)
-
-Try the bundled example environment (it installs the published package — no build
-step needed):
+## Quick start
 
 ```bash
-flox activate -d acdev-demo          # installs jbayer/acdev, registers the hooks
-cd acdev-demo/demo-project           # ships an .applecontainer.toml → handoff fires
+flox activate -d acdev-demo     # installs jbayer/acdev, loads the hooks, starts the Nix cache
+cd acdev-demo/demo-project      # → acdev up && acdev shell, you're in the container
 ```
 
-`cd`-ing into `acdev-demo/demo-project` triggers `acdev up && acdev shell` and drops
-you into the container. Exit the shell and the container keeps running; the next
-`cd` back in is instant.
+Exiting the shell leaves the container running, so the next `cd` back in is
+instant. [acdev-demo/TRY-IT.md](acdev-demo/TRY-IT.md) is a longer walkthrough.
 
-## Use acdev in your own projects (Flox)
+## Use it in your own environment
 
-Install the published package and register the matching hook in your
-environment's `[profile]`. Installing puts `acdev` on PATH and ships the hooks at
-`$FLOX_ENV/share/acdev/hooks/`:
+Install the package and source the hook for your shell from `[profile]`:
 
 ```toml
-# in your environment's .flox/env/manifest.toml
 [install]
 acdev.pkg-path = "jbayer/acdev"
 
@@ -46,151 +37,117 @@ acdev.pkg-path = "jbayer/acdev"
 bash = '''
   [ -r "$FLOX_ENV/share/acdev/hooks/acdev.bash" ] && . "$FLOX_ENV/share/acdev/hooks/acdev.bash"
 '''
-# zsh / fish: source acdev.zsh / acdev.fish the same way
+zsh = '''
+  [ -r "$FLOX_ENV/share/acdev/hooks/acdev.zsh" ] && . "$FLOX_ENV/share/acdev/hooks/acdev.zsh"
+'''
+fish = '''
+  test -r "$FLOX_ENV/share/acdev/hooks/acdev.fish"; and source "$FLOX_ENV/share/acdev/hooks/acdev.fish"
+'''
 ```
 
-See `acdev-demo/.flox/env/manifest.toml` for the full bash/zsh/fish version. Then, in
-any project you want managed:
-
-```bash
-acdev init        # write a starter .applecontainer.toml (no-op if one exists)
-cd <that project> # → dropped into the container shell
-```
+Then run `acdev init` in any project to make it acdev-managed.
 
 ## Commands
 
 ```bash
-acdev init      # write a starter .applecontainer.toml (no-op if one exists)
-acdev up        # create or reuse the project container
-acdev shell     # enter it
-acdev status    # name / state / image / mount / IP
-acdev down      # stop it (--rm to also remove)
+acdev init           # write a starter .applecontainer.toml (no-op if one exists)
+acdev up             # create, restart, or reuse the project container
+acdev shell          # enter it
+acdev status         # name / state / image / mount / IP
+acdev down [--rm]    # stop it (--rm also removes it)
 acdev up --dry-run   # print the container commands without running them
 ```
 
-## Default image
+## Configuration
 
-`image` in `.applecontainer.toml` is optional. When omitted, acdev uses a default
-image, resolved in this order (first match wins):
+Every key in `.applecontainer.toml` is optional; an empty file works.
 
-1. the project's explicit `image = "..."`
-2. the `ACDEV_DEFAULT_IMAGE` environment variable
-3. the built-in default, `jbayer/devcontainer-flox:latest`
+| Key | Default | Meaning |
+|---|---|---|
+| `image` | see below | Container image |
+| `user` | image default | User to run and exec as |
+| `workspace` | `/workspaces/<dir name>` | Where the project is mounted |
+| `shell` | `bash` | Shell `acdev shell` starts |
+| `flox` | `auto` | `auto` activates Flox if the project has `.flox/`; `true`/`false` force it |
+| `nix_cache` | unset | Host Nix cache URL (see [below](#shared-nix-cache)) |
+| `[env]` | none | `KEY = "value"` pairs passed into the container |
 
-The built-in tracks the `latest` tag, so there's no digest to keep updating. To
-pin a specific image — e.g. a digest for reproducibility — set `ACDEV_DEFAULT_IMAGE`,
-which is handy in a flox environment's `[vars]` so every project under it uses the
-same pinned image without editing any `.applecontainer.toml`:
+**Image resolution:** the project's `image`, else `$ACDEV_DEFAULT_IMAGE`, else
+`jbayer/devcontainer-flox:latest`. To pin every project under an environment
+(for example to a digest), set it in that environment's `[vars]`:
 
 ```toml
 [vars]
 ACDEV_DEFAULT_IMAGE = "jbayer/devcontainer-flox:latest@sha256:..."
 ```
 
-`acdev init` bakes the resolved default into the file it generates, so setting
-`ACDEV_DEFAULT_IMAGE` before `init` pins that image into the new project.
+> **Settings apply when the container is created.** `acdev up` reuses an
+> existing container, so after changing `image`, `user`, `workspace`, `[env]`,
+> or `nix_cache`, or to pick up a newer `:latest`, recreate it:
+> `acdev down --rm && container image pull <image> && acdev up`.
 
 ## How it works
 
-- One long-lived container per project, kept alive by a `sleep infinity`
-  keepalive; your interactive shell is a separate `container exec` session.
-- The container name is derived from the project's absolute path, so each
-  project gets one stable, reusable container.
-- Reach services running in the container by its IP (`acdev status`) — the
-  reliable path on Apple Container.
+- Each project gets one long-lived container, kept alive by `sleep infinity`.
+  Your shell is a separate `container exec` session.
+- The container name comes from the project's absolute path
+  (`acdev-<dir>-<hash>`), so it's stable and reused.
+- Reach services in the container by its IP (`acdev status`); that's more
+  reliable on Apple Container than published ports.
 
-## Shared Nix binary cache (optional)
+## Shared Nix cache
 
-Avoid re-downloading Flox/Nix packages across project containers and rebuilds.
-A host-side nginx proxy caches `cache.flox.dev` + `cache.nixos.org` on your SSD;
-containers fetch through it. Signatures pass through, so nothing needs signing.
+An optional host-side nginx proxy caches `cache.flox.dev` and `cache.nixos.org`
+so project containers don't re-download the same packages. Signatures pass
+through unchanged.
 
-Start the cache (bundled in the acdev package, run by the example env). The example
-sets `[services] auto-start = true`, so a plain activate brings it up:
-
-```bash
-flox activate -d acdev-demo                    # runs acdev-nix-cache on :8126
-```
-
-Point a project at it in `.applecontainer.toml`:
-
-```toml
-nix_cache = "http://192.168.64.1:8126"
-```
-
-You usually don't write that line by hand: when the proxy is up, `acdev init` probes
-it (`http://127.0.0.1:8126/`) and writes the `nix_cache` line **active**; when it's
-down, the same line is left commented as a hint. Override the probed/written port
-with `ACDEV_NIX_CACHE_PORT`.
-
-acdev then injects the proxy as a preferred Nix substituter (`-e NIX_CONFIG`) when it
-creates the container. The cache listens on `0.0.0.0:8126` by default; containers reach
-it via the host gateway at `192.168.64.1:8126`. Set `ACDEV_NIX_CACHE_LISTEN=192.168.64.1`
-to restrict it to the container network (LAN-isolated) — but note that IP only exists
-while a container is running, so start a project container before the cache in that mode.
-Use `ACDEV_NIX_CACHE_DIR` to relocate the cache directory.
-
-> Takes effect on container **creation**. If you add `nix_cache` to an existing project,
-> recreate its container: `acdev down --rm && acdev up`.
-
-**Coverage.** The proxy accelerates **base catalog** packages (nixpkgs-derived),
-which flox fetches through Nix substituters. It does **not** cache
-**`flox publish`ed** packages — flox copies those from an S3 egress store,
-bypassing substituters entirely — so those re-download on each fresh container.
-Reusing a container (avoid `--rm`) keeps them in `/nix/store`. Details and evidence:
-[docs/nix-cache-published-packages-findings.md](docs/nix-cache-published-packages-findings.md).
+- **Start it:** `acdev-demo` runs it as an auto-started service on port 8126.
+  Elsewhere, run `acdev-nix-cache`.
+- **Use it:** set `nix_cache = "http://192.168.64.1:8126"`. `acdev init` writes
+  this line automatically when the proxy is running. acdev passes it to the
+  container as an extra Nix substituter.
+- **Tuning:** `ACDEV_NIX_CACHE_PORT` (default 8126), `ACDEV_NIX_CACHE_DIR`
+  (cache location), and `ACDEV_NIX_CACHE_LISTEN` (default `0.0.0.0`; set it to
+  `192.168.64.1` to listen only on the container network, which exists only
+  while a container is running).
+- **Limitation:** packages from `flox publish` aren't cached. Flox fetches them
+  from S3, bypassing Nix substituters, so they re-download in each new
+  container. Reusing a container instead of `--rm` avoids that. See
+  [docs/nix-cache-published-packages-findings.md](docs/nix-cache-published-packages-findings.md).
 
 ## Troubleshooting
 
-`up`, `status`, and `down` preflight the Apple Container CLI and daemon, and fail
-fast with an actionable message (exit 1) instead of a cryptic error:
+- **`the 'container' CLI was not found`** or **`cannot reach the container
+  service`**: install Apple `container`, or run `container system start`.
+  `up`, `status`, and `down` check this first; `init` and `--dry-run` don't
+  need the daemon.
+- **Wrong image or Flox version in the container:** check for an `image` line
+  in `.applecontainer.toml`, then recreate the container (see the note under
+  [Configuration](#configuration)). `container ls` shows the image digest the
+  container is actually running.
+- **`internalError: "createProcess"` on start:** `user` names a user that
+  doesn't exist in the image. The default image has `flox`; stock `ubuntu` has
+  only `root` and `ubuntu`. Check with `container run --rm <image> id <user>`.
 
-- **`container` not installed / not on PATH:**
-
-  ```
-  acdev: the 'container' CLI was not found. Install Apple Container
-  (apple/container) and ensure it is on your PATH.
-  ```
-
-- **Container service not started:**
-
-  ```
-  acdev: cannot reach the container service. Start it with: container system start
-  ```
-
-- **Container fails to start with a generic `createProcess` error:**
-
-  ```
-  Error: failed to start process ... (cause: "internalError: "createProcess"")
-  ```
-
-  Usually the `user` in `.applecontainer.toml` names a user that doesn't exist in
-  the image. The default image (`jbayer/devcontainer-flox:latest`) ships a `flox`
-  user, but most stock images don't — e.g. `image = "ubuntu"` with `user = "flox"`
-  fails this way, since Apple Container can't start a process as a missing user and
-  surfaces it as an opaque `createProcess` failure. Set `user` to one that exists in
-  the image (stock `ubuntu` has `root` and `ubuntu`), or drop the `user` line to run
-  as the image default. Verify with `container run --rm <image> id <user>`.
-
-`acdev init` and `acdev up --dry-run` deliberately skip these checks — they don't
-touch the daemon, so they work with `container` absent or stopped.
-
-## Without Flox (manual fallback)
-
-If you aren't using Flox, you can run the script directly and source the hooks
-from your shell rc:
+## Without Flox
 
 ```bash
 ln -s "$PWD/bin/acdev" /usr/local/bin/acdev
-echo 'source '"$PWD"'/hooks/acdev.zsh'  >> ~/.zshrc    # zsh
-echo 'source '"$PWD"'/hooks/acdev.bash' >> ~/.bashrc   # bash
-echo 'source '"$PWD"'/hooks/acdev.fish' >> ~/.config/fish/config.fish  # fish
+echo "source $PWD/hooks/acdev.zsh" >> ~/.zshrc   # or acdev.bash / acdev.fish
 ```
 
 ## Development
 
 ```bash
-flox activate -- bats tests/          # run the suite
-flox activate -- shellcheck bin/acdev # lint
-flox build acdev                      # build the package
+flox activate -- bats tests/                            # test suite
+flox activate -- shellcheck bin/acdev bin/acdev-nix-cache
+flox build acdev                                        # build the package
 ```
+
+The version lives in `ACDEV_VERSION` in `bin/acdev`, and the Flox build reads it
+from there.
+
+Background notes are in `docs/`:
+[Apple Container reference](docs/apple-container-reference.md),
+[storage and networking findings](docs/apple-container-storage-networking-findings.md),
+and [Nix cache vs. published packages](docs/nix-cache-published-packages-findings.md).
