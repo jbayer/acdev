@@ -151,3 +151,9 @@ Background notes are in `docs/`:
 [Apple Container reference](docs/apple-container-reference.md),
 [storage and networking findings](docs/apple-container-storage-networking-findings.md),
 and [Nix cache vs. published packages](docs/nix-cache-published-packages-findings.md).
+
+## Related: `container machine`
+
+[machine/](machine/README.md) has a systemd Ubuntu 24.04 image for Apple
+`container machine`, a long-lived VM with your macOS user and home directory.
+It's separate from acdev.
