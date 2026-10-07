@@ -1,0 +1,79 @@
+{
+  "lockfile-version": 1,
+  "manifest": {
+    "schema-version": "1.13.0",
+    "install": {
+      "hello": {
+        "pkg-path": "hello"
+      }
+    },
+    "hook": {},
+    "profile": {},
+    "options": {
+      "systems": [
+        "aarch64-darwin",
+        "aarch64-linux"
+      ]
+    }
+  },
+  "packages": [
+    {
+      "attr_path": "hello",
+      "broken": false,
+      "derivation": "/nix/store/2lzi2zpmbhb9sww18day2g9h8p86vqjp-hello-2.12.3.drv",
+      "description": "Program that produces a familiar, friendly greeting",
+      "install_id": "hello",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "name": "hello-2.12.3",
+      "pname": "hello",
+      "rev": "151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "rev_count": 1086391,
+      "rev_date": "2026-10-06T04:29:54Z",
+      "scrape_date": "2026-10-07T04:59:53.186941Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.12.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/mklmiipy424axj6zgl1vnqg6a58mdz77-hello-2.12.3"
+      },
+      "system": "aarch64-darwin",
+      "group": "toplevel",
+      "priority": 5
+    },
+    {
+      "attr_path": "hello",
+      "broken": false,
+      "derivation": "/nix/store/ggmnvm04bgg2q93na1zava2xrr9bfdyw-hello-2.12.3.drv",
+      "description": "Program that produces a familiar, friendly greeting",
+      "install_id": "hello",
+      "license": "GPL-3.0-or-later",
+      "locked_url": "https://github.com/flox/nixpkgs?rev=151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "name": "hello-2.12.3",
+      "pname": "hello",
+      "rev": "151fa4e8ddfdd8dd25d945ad94ed54a13de9f6e4",
+      "rev_count": 1086391,
+      "rev_date": "2026-10-06T04:29:54Z",
+      "scrape_date": "2026-10-07T05:32:12.625286Z",
+      "stabilities": [
+        "unstable"
+      ],
+      "unfree": false,
+      "version": "2.12.3",
+      "outputs_to_install": [
+        "out"
+      ],
+      "outputs": {
+        "out": "/nix/store/0xy6jlccm8kfpwmhkxabz3638lchyi74-hello-2.12.3"
+      },
+      "system": "aarch64-linux",
+      "group": "toplevel",
+      "priority": 5
+    }
+  ]
+}

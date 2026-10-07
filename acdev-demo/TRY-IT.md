@@ -23,7 +23,8 @@ curl -s http://127.0.0.1:8126/  # acdev nix-cache proxy
 
 ```bash
 cd demo-project                 # acdev creates the container and drops you into it
-flox --version                  # Flox inside the container
+cat hello.txt                   # the host directory is mounted at /workspaces/demo-project
+hello                           # from demo-project's own Flox env, activated automatically
 exit                            # the container keeps running
 ```
 
