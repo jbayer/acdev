@@ -53,7 +53,7 @@ Then run `acdev init` in any project to make it acdev-managed.
 acdev init           # write a starter .applecontainer.toml (no-op if one exists)
 acdev up             # create, restart, or reuse the project container
 acdev shell          # enter it
-acdev status         # name / state / image / mount / IP
+acdev status         # name / state / image and running digest / mount / IP
 acdev down [--rm]    # stop it (--rm also removes it)
 acdev up --dry-run   # print the container commands without running them
 ```
@@ -121,10 +121,11 @@ through unchanged.
   service`**: install Apple `container`, or run `container system start`.
   `up`, `status`, and `down` check this first; `init` and `--dry-run` don't
   need the daemon.
-- **Wrong image or Flox version in the container:** check for an `image` line
-  in `.applecontainer.toml`, then recreate the container (see the note under
-  [Configuration](#configuration)). `container ls` shows the image digest the
-  container is actually running.
+- **Wrong image or Flox version in the container:** `acdev status` shows both
+  the configured `image` and the `digest` the container was actually created
+  from. If they don't match what you expect, check for an `image` line in
+  `.applecontainer.toml`, then recreate the container (see the note under
+  [Configuration](#configuration)).
 - **`internalError: "createProcess"` on start:** `user` names a user that
   doesn't exist in the image. The default image has `flox`; stock `ubuntu` has
   only `root` and `ubuntu`. Check with `container run --rm <image> id <user>`.

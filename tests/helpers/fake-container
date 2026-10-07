@@ -13,6 +13,10 @@
 # a stopped container's ADDR is blank. This fake reproduces that layout so
 # container_state (greps the name) and cmd_status (reads the ADDR column)
 # are exercised against the real format.
+#
+# `container inspect <name>` returns pretty-printed JSON like container 1.5.0,
+# with the image digest at configuration.image.descriptor.digest. It fails with
+# "container not found" when the container is absent.
 set -euo pipefail
 echo "$*" >>"${ACDEV_FAKE_LOG:-/dev/null}"
 
@@ -36,6 +40,31 @@ case "$1" in
         printf '%s docker.io/img:1 linux arm64 stopped  4 1024 MB %s\n' "$name" "$ts" ;;
       absent)  : ;;
     esac
+    ;;
+  inspect)
+    if [ "$state" = absent ] || [ "${2:-}" != "$name" ]; then
+      echo "Error: container not found: ${2:-}" >&2
+      exit 1
+    fi
+    cat <<JSON
+[
+  {
+    "configuration" : {
+      "id" : "$name",
+      "image" : {
+        "descriptor" : {
+          "digest" : "sha256:${ACDEV_FAKE_DIGEST:-a994b4024250c41fc5fd0d387c603adca30e978378a4cba7027a39ad30c61d9b}",
+          "mediaType" : "application/vnd.oci.image.index.v1+json",
+          "size" : 856
+        },
+        "reference" : "docker.io/img:1"
+      }
+    },
+    "id" : "$name",
+    "status" : "$state"
+  }
+]
+JSON
     ;;
   *) : ;;   # run/start/stop/exec/etc. just get logged
 esac

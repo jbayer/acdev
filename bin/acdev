@@ -4,7 +4,7 @@ set -euo pipefail
 # Single source of truth for the acdev version (3-digit semver). The Flox build
 # reads this exact line via `version.command` in .flox/env/manifest.toml, so this
 # is the only place to bump the version.
-ACDEV_VERSION="0.1.6"
+ACDEV_VERSION="0.1.7"
 
 usage() {
   printf 'acdev %s\n\n' "$ACDEV_VERSION"
@@ -237,13 +237,21 @@ cmd_down() {
 cmd_status() {
   resolve_config
   [ "$DRY_RUN" != 1 ] && preflight
-  local name state line ip
+  local name state line ip digest
   name="$(container_name)"
   state="$(container_state "$name")"
   printf 'project   %s\n' "$(basename "$(pwd -P)")"
   printf 'container %s\n' "$name"
   printf 'state     %s\n' "$state"
   printf 'image     %s\n' "$CFG_IMAGE"
+  if [ "$state" != absent ]; then
+    # `image` above is what the config asks for; the container keeps whatever
+    # it was created from. Its inspect JSON carries exactly one digest, at
+    # configuration.image.descriptor.digest.
+    digest="$(command container inspect "$name" 2>/dev/null \
+      | grep '"digest"' | grep -o 'sha256:[0-9a-f]*' | head -n1)" || true
+    [ -n "$digest" ] && printf 'digest    %s\n' "$digest"
+  fi
   printf 'workspace %s → %s\n' "$(pwd -P)" "$CFG_WORKSPACE"
   if [ "$state" = running ]; then
     # IP is the ADDR column (6th field) of the matching `container ls` row:
